@@ -1,0 +1,2113 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "map-api文档</br>1、管理端需要验证的接口，在请求的header加上token</br>2、返回状态：status:200操作成功， status:1000服务器自定义错误， status:500服务器内部错误,status:400bad request，status：405请求方法不允许，错误结果对象{code：错误代码， msg：错误消息}",
+    "version": "V1",
+    "title": "地图系统"
+  },
+  "host": "127.0.0.1:8888",
+  "basePath": "/map",
+  "tags": [
+    {
+      "name": "channel-controller",
+      "description": "频道相关信息"
+    },
+    {
+      "name": "client-controller",
+      "description": "客户端接口"
+    },
+    {
+      "name": "config-controller",
+      "description": "配置信息"
+    },
+    {
+      "name": "manager-controller",
+      "description": "管理员信息接口"
+    },
+    {
+      "name": "position-controller",
+      "description": "位置信息接口"
+    },
+    {
+      "name": "token-controller",
+      "description": "token接口（登录接口）"
+    },
+    {
+      "name": "user-controller",
+      "description": "用户信息接口"
+    },
+    {
+      "name": "video-controller",
+      "description": "ptt视频采集相关信息"
+    }
+  ],
+  "paths": {
+    "/V1/channel": {
+      "get": {
+        "tags": [
+          "channel-controller"
+        ],
+        "summary": "查询（ptt上）所有频道信息",
+        "description": "查询（ptt上）所有频道信息",
+        "operationId": "findAllUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "页大小， 默认20",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量， 默认0",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "queryTag",
+            "in": "query",
+            "description": "查询标志，1:获取有在线用户频道信息,2:获取没有在线用户的频道信息,3:获取所有频道信息",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "名称模糊查询字段，用户名称",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/ChannelListSwaggerVo"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/channel/getUsers": {
+      "get": {
+        "tags": [
+          "channel-controller"
+        ],
+        "summary": "查询（ptt上）频道中的用户信息",
+        "description": "查询（ptt上）频道中的用户信息",
+        "operationId": "getUsersUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "query",
+            "description": "频道id",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "页大小， 默认20",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量， 默认0",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "升序降序字段,如：asc 升序 desc降序",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "名称模糊查询字段，用户名称或号码字段",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序字段，</br>注意：排序字段是驼峰形式的换成下滑线参数传上来",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/ChannelUserListSwaggerVo"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/channel/joinChannel": {
+      "post": {
+        "tags": [
+          "channel-controller"
+        ],
+        "summary": "用户加入频道",
+        "description": "用户加入频道",
+        "operationId": "joinChannelUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "query",
+            "description": "频道id",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户id",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/client/position": {
+      "post": {
+        "tags": [
+          "client-controller"
+        ],
+        "summary": "上传金纬度",
+        "description": "注意：header里面传验证参数user和token",
+        "operationId": "addUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "email",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "latitude",
+            "in": "query",
+            "description": "纬度",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "description": "经度",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "mobile",
+            "in": "query",
+            "description": "用户电话号码",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户id（ptt的用户id）",
+            "required": true,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "description": "用戶名称",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/config/addGetPositionTime": {
+      "get": {
+        "tags": [
+          "config-controller"
+        ],
+        "summary": "添加“获取所有用户最新位置信息”接口的间隔时间(获取xx分钟以内的最新位置信息)",
+        "operationId": "addGetPositionTimeUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "time",
+            "in": "query",
+            "description": "，单位分钟",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/config/getTime": {
+      "get": {
+        "tags": [
+          "config-controller"
+        ],
+        "summary": "获取最新位置间隔时间",
+        "operationId": "getTimeUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/GetTimeVo"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/findHasPostionDateByUserId": {
+      "get": {
+        "tags": [
+          "user-controller"
+        ],
+        "summary": " 获取指定用户所有有位置上传的日期（按日期分组）",
+        "description": " 获取指定用户所有有位置上传的日期（按日期分组）",
+        "operationId": "findHasPostionDateByUserIdUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "结束时间时间，单位（毫秒）",
+            "required": false,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "页大小， 默认20",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量， 默认0",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "升序降序字段,如：asc 升序 desc降序",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "模糊查询字段createTime，格式如：1970-01-01",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序字段，</br>注意：排序字段是驼峰形式的换成下滑线参数传上来",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "开始时间，单位（毫秒）",
+            "required": false,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户id",
+            "required": true,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/HasPositionDateListSwaggerVo"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/manager": {
+      "get": {
+        "tags": [
+          "manager-controller"
+        ],
+        "summary": "查询所有管理员表",
+        "description": "查询所有管理员表",
+        "operationId": "findAllUsingGET_1",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "页大小， 默认20",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量， 默认0",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "升序降序字段,如：asc 升序 desc降序",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "名称模糊查询字段",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序字段，</br>注意：排序字段是驼峰形式的换成下滑线参数传上来",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/ManagerListSwaggerVo"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      },
+      "post": {
+        "tags": [
+          "manager-controller"
+        ],
+        "summary": "添加管理员表",
+        "description": "添加管理员表",
+        "operationId": "saveUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "password",
+            "in": "query",
+            "description": "密码，将密码多次加密后，生成的一个HASH值",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "description": "管理员名称",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/manager/{id}": {
+      "get": {
+        "tags": [
+          "manager-controller"
+        ],
+        "summary": "查询管理员表详情",
+        "description": "查询管理员表详情",
+        "operationId": "findByIdUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "管理员表id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/ManagerSwaggerVo对象"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      },
+      "put": {
+        "tags": [
+          "manager-controller"
+        ],
+        "summary": "修改管理员表",
+        "description": "修改管理员表",
+        "operationId": "updateByIdUsingPUT",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "管理员表id",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "oldPassword",
+            "in": "query",
+            "description": "旧密码(可选)",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "密码(可选)",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "description": "管理员名称(可选)",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      },
+      "delete": {
+        "tags": [
+          "manager-controller"
+        ],
+        "summary": "删除管理员表",
+        "description": "删除管理员表",
+        "operationId": "deleteByIdUsingDELETE",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "管理员表id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/manager/{id}/resetPassword": {
+      "put": {
+        "tags": [
+          "manager-controller"
+        ],
+        "summary": "重置密码,为123456",
+        "description": "重置密码",
+        "operationId": "resetPasswordUsingPUT",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "管理员id",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/position": {
+      "get": {
+        "tags": [
+          "position-controller"
+        ],
+        "summary": "查询所有位置信息",
+        "description": "查询所有位置信息",
+        "operationId": "findAllUsingGET_2",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "页大小， 默认20",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量， 默认0",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "升序降序字段,如：asc 升序 desc降序",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "用户名称模糊查询字段",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序字段，</br>注意：排序字段是驼峰形式的换成下滑线参数传上来",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/PositionListSwaggerVo对象"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/position/getAllNewestPosition": {
+      "get": {
+        "tags": [
+          "position-controller"
+        ],
+        "summary": "获取所有用户最新位置信息（管理端登录以后传的位置）",
+        "description": "获取所有用户最新位置信息（管理端登录以后传的位置）",
+        "operationId": "getAllNewestPositionUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "页大小， 默认20",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量， 默认0",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "升序降序字段,如：asc 升序 desc降序",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序字段，</br>注意：排序字段是驼峰形式的换成下滑线参数传上来",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/PositionVideoListSwaggerVo"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/position/{id}": {
+      "delete": {
+        "tags": [
+          "position-controller"
+        ],
+        "summary": "删除位置信息",
+        "description": "删除位置信息",
+        "operationId": "deleteByIdUsingDELETE_1",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "位置id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/token/clearManagerToken": {
+      "post": {
+        "tags": [
+          "token-controller"
+        ],
+        "summary": "管理员获取token(相当于管理员登录)",
+        "description": "管理员获取token(相当于管理员登录)",
+        "operationId": "managerGetTokenUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "验证token",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/token/managerGetToken": {
+      "post": {
+        "tags": [
+          "token-controller"
+        ],
+        "summary": "管理员获取token(相当于管理员登录)",
+        "description": "管理员获取token(相当于管理员登录)",
+        "operationId": "managerGetTokenUsingPOST_1",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "password",
+            "in": "query",
+            "description": "密码，MD5加密后传上来",
+            "required": true,
+            "type": "string",
+            "default": "e10adc3949ba59abbe56e057f20f883e",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "description": "管理员名称",
+            "required": true,
+            "type": "string",
+            "default": "admin",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/token对象"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/user": {
+      "get": {
+        "tags": [
+          "user-controller"
+        ],
+        "summary": "查询所有用户信息（ptt上的所有用户信息）",
+        "description": "查询所有用户信息（ptt上的所有用户信息）",
+        "operationId": "findAllUsingGET_3",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "页大小， 默认20",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量， 默认0",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "升序降序字段,如：asc 升序 desc降序",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "名称模糊查询字段，用户名称或号码字段",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序字段，</br>注意：排序字段是驼峰形式的换成下滑线参数传上来",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/UserListSwaggerVo"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/user/closeAndPush": {
+      "post": {
+        "tags": [
+          "user-controller"
+        ],
+        "summary": "关闭上传坐标并推送给客户端",
+        "description": "关闭上传坐标并推送给客户端",
+        "operationId": "closeAndPushUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/user/findPath": {
+      "get": {
+        "tags": [
+          "user-controller"
+        ],
+        "summary": "获取指定用户轨迹",
+        "description": "获取指定用户轨迹",
+        "operationId": "findPathUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "结束时间时间，单位（毫秒）",
+            "required": false,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "开始时间，单位（毫秒）",
+            "required": false,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户id",
+            "required": true,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "ref": "#/definitions/Position对象"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/user/getCurrentPosition": {
+      "get": {
+        "tags": [
+          "user-controller"
+        ],
+        "summary": "获取用户当前位置",
+        "description": "获取用户当前位置",
+        "operationId": "getCurrentPositionUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户id",
+            "required": true,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/Position对象"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/user/groupPosition": {
+      "get": {
+        "tags": [
+          "position-controller"
+        ],
+        "summary": "获取指定用户位置分组（统计位置出现次数）",
+        "description": "获取指定用户位置分组（统计位置出现次数）",
+        "operationId": "groupPositionUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "结束时间时间，单位（毫秒）",
+            "required": false,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "开始时间，单位（毫秒）",
+            "required": false,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户id",
+            "required": true,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "ref": "#/definitions/GroupPositionVo"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/user/online": {
+      "get": {
+        "tags": [
+          "user-controller"
+        ],
+        "summary": "查询所有上传过坐标的用户信息",
+        "description": "查询所有上传过坐标的用户信息",
+        "operationId": "findAllHasPositionUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "页大小， 默认20",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量， 默认0",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "升序降序字段,如：asc 升序 desc降序",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "名称模糊查询字段，用户名称或号码字段",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序字段，</br>注意：排序字段是驼峰形式的换成下滑线参数传上来",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/UserListSwaggerVo"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/user/uploadCoordinateAndPush": {
+      "post": {
+        "tags": [
+          "user-controller"
+        ],
+        "summary": "开启上传坐标并推送给客户端",
+        "description": "开启上传坐标并推送给客户端",
+        "operationId": "uploadCoordinateAndPushUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/video/getPlay": {
+      "get": {
+        "tags": [
+          "video-controller"
+        ],
+        "summary": "查询指定用户或所有用户的视频采集记录",
+        "description": "order和sort排序暂时没做",
+        "operationId": "getPlayUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "结束时间，格式：",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "页大小， 默认20",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量， 默认0",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "升序降序字段,如：asc 升序 desc降序",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "名称模糊查询字段，视频名称",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序字段，</br>注意：排序字段是驼峰形式的换成下滑线参数传上来",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "开始时间，格式：",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户id，传了查单个，不传查所有",
+            "required": false,
+            "type": "integer",
+            "default": 0,
+            "format": "int32",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/VideoListSwaggerVo对象"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/video/getPlayUsers": {
+      "get": {
+        "tags": [
+          "video-controller"
+        ],
+        "summary": "获取有视频采集的用户信息",
+        "description": "order和sort排序暂时没做",
+        "operationId": "getPlayUsersUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "页大小， 默认20",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "偏移量， 默认0",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "升序降序字段,如：asc 升序 desc降序",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "名称模糊查询字段，用户名称",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "排序字段，</br>注意：排序字段是驼峰形式的换成下滑线参数传上来",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "ref": "#/definitions/VideoUserListSwaggerVo对象"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/V1/video/getStreams": {
+      "get": {
+        "tags": [
+          "video-controller"
+        ],
+        "summary": "获取正在直播的用户及视频相关信息",
+        "description": "获取正在直播的用户及视频相关信息",
+        "operationId": "getStreamsUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "ref": "#/definitions/StreamsVo"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Authorization": {
+      "type": "apiKey",
+      "name": "token",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "ChannelListSwaggerVo": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "type": "array",
+          "description": "所有行信息",
+          "items": {
+            "ref": "#/definitions/ChannleSwaggerVo"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": "总条数"
+        }
+      },
+      "title": "ChannelListSwaggerVo",
+      "description": "管理员分页信息"
+    },
+    "ChannelUserListSwaggerVo": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "type": "array",
+          "description": "所有行信息",
+          "items": {
+            "ref": "#/definitions/ChannleUserSwaggerVo"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": "总条数"
+        }
+      },
+      "title": "ChannelUserListSwaggerVo",
+      "description": "频道中用户分页信息"
+    },
+    "ChannleSwaggerVo": {
+      "type": "object",
+      "properties": {
+        "channelId": {
+          "type": "integer",
+          "format": "int32",
+          "description": "频道id"
+        },
+        "channelName": {
+          "type": "string",
+          "description": "频道名称"
+        },
+        "hasOnLine": {
+          "type": "boolean",
+          "description": "是否有在线用户，true 有， false：没有"
+        },
+        "managerCreatorName": {
+          "type": "string",
+          "description": "管理员创建者名称"
+        },
+        "userCount": {
+          "type": "string",
+          "description": "频道用户数"
+        },
+        "userCreatorName": {
+          "type": "string",
+          "description": "用户创建者名称"
+        }
+      },
+      "title": "ChannleSwaggerVo",
+      "description": "频道对象"
+    },
+    "ChannleUserSwaggerVo": {
+      "type": "object",
+      "properties": {
+        "mobile": {
+          "type": "string",
+          "description": "电话号码"
+        },
+        "online": {
+          "type": "boolean",
+          "description": "电话号码：true 在线;false 不在线"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int32",
+          "description": "用户id"
+        },
+        "username": {
+          "type": "string",
+          "description": "用户名称"
+        }
+      },
+      "title": "ChannleUserSwaggerVo",
+      "description": "频道中用户对象"
+    },
+    "DateVo": {
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "type": "string",
+          "example": "1970-01-01",
+          "description": "日期， 格式如：1970-01-01"
+        },
+        "positionCount": {
+          "type": "integer",
+          "format": "int32",
+          "description": "位置个数"
+        }
+      },
+      "title": "DateVo",
+      "description": "返回日期对象"
+    },
+    "GetTimeVo": {
+      "type": "object",
+      "properties": {
+        "getPositionWithinMunite": {
+          "type": "integer",
+          "format": "int32",
+          "description": "获取xx分钟内的最新位置信息"
+        }
+      },
+      "title": "GetTimeVo",
+      "description": "getTime方法返回对象"
+    },
+    "GroupPositionVo": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "format": "int64",
+          "description": "位置（经度，纬度）出现次数"
+        },
+        "lat": {
+          "type": "string",
+          "description": "纬度"
+        },
+        "lng": {
+          "type": "string",
+          "description": "经度"
+        }
+      },
+      "title": "GroupPositionVo",
+      "description": "位置分组信息"
+    },
+    "HasPositionDateListSwaggerVo": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "type": "array",
+          "description": "所有行信息",
+          "items": {
+            "ref": "#/definitions/DateVo"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": "总条数"
+        }
+      },
+      "title": "HasPositionDateListSwaggerVo",
+      "description": "所有有位置的日期信息（日期分组）"
+    },
+    "ManagerListSwaggerVo": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "type": "array",
+          "description": "所有行信息",
+          "items": {
+            "ref": "#/definitions/ManagerSwaggerVo对象"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": "总条数"
+        }
+      },
+      "title": "ManagerListSwaggerVo",
+      "description": "管理员分页信息"
+    },
+    "ManagerSwaggerVo对象": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "代理id"
+        },
+        "lastLoginTime": {
+          "type": "integer",
+          "format": "int64",
+          "description": "登录时间，毫秒数"
+        },
+        "username": {
+          "type": "string",
+          "description": "用户名称"
+        }
+      },
+      "title": "ManagerSwaggerVo对象",
+      "description": "管理员返回对象"
+    },
+    "Manager对象": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "id"
+        },
+        "lastLoginTime": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "password": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "title": "Manager对象"
+    },
+    "PositionListSwaggerVo对象": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "type": "array",
+          "description": "所有行信息",
+          "items": {
+            "ref": "#/definitions/Position对象"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": "总条数"
+        }
+      },
+      "title": "PositionListSwaggerVo对象",
+      "description": "位置分页信息"
+    },
+    "PositionVideoListSwaggerVo": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "type": "array",
+          "description": "所有行信息",
+          "items": {
+            "ref": "#/definitions/PositionVideoVo对象"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": "总条数"
+        }
+      },
+      "title": "PositionVideoListSwaggerVo",
+      "description": "位置分页信息"
+    },
+    "PositionVideoVo对象": {
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "type": "integer",
+          "format": "int64",
+          "description": "创建时间，单位（毫秒）"
+        },
+        "email": {
+          "type": "string",
+          "description": "email"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "id"
+        },
+        "latitude": {
+          "type": "string",
+          "description": "纬度"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "经度"
+        },
+        "mobile": {
+          "type": "string",
+          "description": "电话号码"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "用户id"
+        },
+        "username": {
+          "type": "string",
+          "description": "用户名称"
+        },
+        "videoCapturing": {
+          "type": "boolean",
+          "description": "正在视频采集，true：正在采集， false：没有正在采集"
+        }
+      },
+      "title": "PositionVideoVo对象",
+      "description": "用户位置信息和是否在采集视频返回对象"
+    },
+    "Position对象": {
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "type": "integer",
+          "format": "int64",
+          "description": "创建时间，单位（毫秒）"
+        },
+        "email": {
+          "type": "string",
+          "description": "email"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "id"
+        },
+        "latitude": {
+          "type": "string",
+          "description": "纬度"
+        },
+        "longitude": {
+          "type": "string",
+          "description": "经度"
+        },
+        "mobile": {
+          "type": "string",
+          "description": "电话号码"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "用户id"
+        },
+        "username": {
+          "type": "string",
+          "description": "用户名称"
+        }
+      },
+      "title": "Position对象",
+      "description": "返回对象"
+    },
+    "StreamsVo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "用户id"
+        },
+        "mobile": {
+          "type": "string",
+          "description": "电话号码"
+        },
+        "name": {
+          "type": "string",
+          "description": "用户名称"
+        },
+        "requirepass": {
+          "type": "boolean",
+          "description": "需要密码， true 需要， false： 不需要要"
+        },
+        "title": {
+          "type": "string",
+          "description": "视频名称"
+        }
+      },
+      "title": "StreamsVo",
+      "description": "视频采集返回对象"
+    },
+    "UserListSwaggerVo": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "type": "array",
+          "description": "所有行信息",
+          "items": {
+            "ref": "#/definitions/用户对象"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": "总条数"
+        }
+      },
+      "title": "UserListSwaggerVo",
+      "description": "用户分页信息"
+    },
+    "VideoListSwaggerVo对象": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "type": "array",
+          "description": "所有行信息",
+          "items": {
+            "ref": "#/definitions/VideoVo"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": "总条数"
+        }
+      },
+      "title": "VideoListSwaggerVo对象",
+      "description": "采集视频的分页信息"
+    },
+    "VideoUserListSwaggerVo对象": {
+      "type": "object",
+      "properties": {
+        "rows": {
+          "type": "array",
+          "description": "所有行信息",
+          "items": {
+            "ref": "#/definitions/VideoUserVo"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": "总条数"
+        }
+      },
+      "title": "VideoUserListSwaggerVo对象",
+      "description": "有采集视频的用户分页信息"
+    },
+    "VideoUserVo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "streams表的id"
+        },
+        "userId": {
+          "type": "string",
+          "description": "用户id"
+        },
+        "userName": {
+          "type": "string",
+          "description": "用户名称"
+        }
+      },
+      "title": "VideoUserVo",
+      "description": "视频采集返回对象"
+    },
+    "VideoVo": {
+      "type": "object",
+      "properties": {
+        "endTime": {
+          "type": "string",
+          "description": "采集结束时间，格式如：1990-02-03 05:23:33"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "streams表的id"
+        },
+        "recordPath": {
+          "type": "string",
+          "description": "采集保存路径"
+        },
+        "startTime": {
+          "type": "string",
+          "description": "采集开始时间，格式如：1990-02-03 05:23:33"
+        },
+        "streamId": {
+          "type": "string",
+          "description": "流id"
+        },
+        "title": {
+          "type": "string",
+          "description": "采集标题"
+        },
+        "userId": {
+          "type": "string",
+          "description": "用户id"
+        },
+        "userName": {
+          "type": "string",
+          "description": "用户名称"
+        }
+      },
+      "title": "VideoVo",
+      "description": "视频采集返回对象"
+    },
+    "token对象": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "description": "令牌"
+        }
+      },
+      "title": "token对象",
+      "description": "token对象"
+    },
+    "用户对象": {
+      "type": "object",
+      "properties": {
+        "afterLogin": {
+          "type": "boolean",
+          "description": "管理员登录前：false，后：true上传的坐标"
+        },
+        "mobile": {
+          "type": "string",
+          "description": "用户电话号码"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "用户id"
+        },
+        "username": {
+          "type": "string",
+          "description": "用户名称"
+        }
+      },
+      "title": "用户对象",
+      "description": "返回对象"
+    }
+  }
+}
