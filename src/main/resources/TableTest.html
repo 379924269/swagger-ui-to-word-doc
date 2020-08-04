@@ -3,6 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script type="text/javascript">
+        window.onload = function(){
+            for (let i = 0; i < 1000; i++) {
+                var className = "show_json" + i;
+                const text = document.getElementById(className).innerText;
+                if (text) {
+                    const result = JSON.stringify(JSON.parse(text), null, 100);
+                    document.getElementById(className).innerHTML = "<pre>" + result + "</pre>";
+                }
+            }
+        }
+    </script>
 </head>
 <body>
 <h1 align="center">位置管理</h1>
@@ -40,11 +52,14 @@
     </tr>
     <tr>
         <td>200</td>
-        <td colspan="3">{
-            "id": 0,
-            "lastLoginTime": 0,
-            "username": "string"
-            }
+        <td colspan="3">
+            <p id="show_json">
+                {
+                "id": 0,
+                "lastLoginTime": 0,
+                "username": "string"
+                }
+            </p>
         </td>
     </tr>
 </table>
