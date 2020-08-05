@@ -3,7 +3,6 @@ package com.dnp.huazai;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -15,6 +14,8 @@ import java.io.*;
  * @date 2020/6/22
  */
 public class SwaggerToWordDoc {
+    static int ID = 0;
+
     public static void convert() {
         try {
             JSONObject jsonObject = getSwaggerJsonData();
@@ -126,26 +127,27 @@ public class SwaggerToWordDoc {
                 "        <td colspan=\"3\">返回结果</td>\n" +
                 "    </tr>");
 
-        JSONObject requestResponseObject = requestMehtodJsonObject.getJSONObject("responses");
-        for (String responseKey : requestResponseObject.keySet()) {
-            JSONObject responseObject1 = requestResponseObject.getJSONObject(responseKey);
+        JSONObject pathsResponses = requestMehtodJsonObject.getJSONObject("responses");
+        dealResponse(definitions, generateHtmlBuilder, pathsResponses);
+    }
 
-            if (keyName.contains("comment")) {
-                System.out.println(" = " + keyName);
-            }
+    private static void dealResponse(JSONObject definitions, StringBuilder generateHtmlBuilder, JSONObject pathsResponses) {
+        System.out.println("pathsResponses = " + pathsResponses);
+        for (String responseKey : pathsResponses.keySet()) {
+            JSONObject pathsResponsekey = pathsResponses.getJSONObject(responseKey);
+            System.out.println("ref = " + pathsResponsekey);
 
-            if (!responseObject1.containsKey("schema")) {
-                generateHtmlBuilder.append(returnResultInfor(responseKey + "  //" + responseObject1.getString("description"), "无"));
+            if (!pathsResponsekey.containsKey("schema")) {
+                generateHtmlBuilder.append(returnResultInfor(responseKey + "  //" + pathsResponsekey.getString("description"), "无"));
             } else {
-                for (String resultKey : responseObject1.keySet()) {
+                for (String resultKey : pathsResponsekey.keySet()) {
                     if (resultKey.equals("schema")) {
                         String ref = null;
-                        if (responseObject1.getJSONObject(resultKey).containsKey("ref")) {
-                            ref = responseObject1.getJSONObject(resultKey).getString("ref");
+                        if (pathsResponsekey.getJSONObject(resultKey).containsKey("ref")) {
+                            ref = pathsResponsekey.getJSONObject(resultKey).getString("ref");
                         } else {
-                            System.out.println("ref = " + responseObject1);
-                            if (responseObject1.getJSONObject(resultKey).containsKey("items")) {
-                                ref = responseObject1.getJSONObject(resultKey).getJSONObject("items").getString("ref");
+                            if (pathsResponsekey.getJSONObject(resultKey).containsKey("items")) {
+                                ref = pathsResponsekey.getJSONObject(resultKey).getJSONObject("items").getString("ref");
                             }
                         }
 
@@ -162,16 +164,28 @@ public class SwaggerToWordDoc {
 
     private static JSONObject getSwaggerJsonData() throws IOException {
         String jsonDataPath = System.getProperty("user.dir") + "\\src\\main\\resources\\SwaggerData.json";
-        String xx = JSON.toJSON(IOUtils.toString(new FileReader(jsonDataPath)).replaceAll("$", "")).toString();
+        String xx = JSON.toJSON(IOUtils.toString(new FileReader(jsonDataPath)).replace("$", "")).toString();
         return JSONObject.parseObject(xx);
     }
 
     private static String createHtmlHead(String docTitle) {
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
+                "<head>\n" +
                 "<meta charset=\"UTF-8\">\n" +
                 "    <title>Title</title>" +
-                "<head>\n" +
+                " <script type=\"text/javascript\">\n" +
+                "        window.onload = function(){\n" +
+                "            for (let i = 1; i < 1000; i++) {\n" +
+                "                var id = \"show_json\" + i;\n" +
+                "                const text = document.getElementById(id).innerText;\n" +
+                "                if (text) {\n" +
+                "                    const result = JSON.stringify(JSON.parse(text), null, 100);\n" +
+                "                    document.getElementById(id).innerHTML = \"<pre>\" + result + \"</pre>\";\n" +
+                "                }\n" +
+                "            }\n" +
+                "        }\n" +
+                "    </script>" +
                 "</head>\n" +
                 "<body>" +
                 "<h1 align=\"center\">" + docTitle + "</h1>";
@@ -201,12 +215,13 @@ public class SwaggerToWordDoc {
      * @return : java.lang.String
      */
     private static String returnJsonResultInfor(String responseKey, String responseResult) {
+        ID++;
         return "<tr>\n" +
                 "        <td>" + responseKey + "</td>\n" +
                 "        <td colspan=\"3\">\n" +
-                "        <p class=\"show_json\">" +
+                " <p id=\"show_json" + ID + "\">" +
                 "            " + responseResult + "\n" +
-                "        </p>\n" +
+                " </p>" +
                 "        </td>\n" +
                 "    </tr>";
     }
@@ -228,6 +243,9 @@ public class SwaggerToWordDoc {
             if (propertiesKeyName.equals("rows")) {
                 String rowsRef = propertieJsonObject.getJSONObject("rows").getJSONObject("items").getString("ref");
                 propertiesKeyNameJsonObject.put("rows", getRefValue(definitions, rowsRef));
+            } else if (propertiesKeyName.equals("records")) {
+                String rowsRef = propertieJsonObject.getJSONObject("records").getJSONObject("items").getString("ref");
+                propertiesKeyNameJsonObject.put("records", getRefValue(definitions, rowsRef));
             } else {
                 propertiesKeyNameJsonObject.put(propertiesKeyName, propertieJsonObject.getJSONObject(propertiesKeyName).getString("type") + "  //" + propertieJsonObject.getJSONObject(propertiesKeyName).getString("description"));
             }

@@ -5,12 +5,12 @@
     <title>Title</title>
     <script type="text/javascript">
         window.onload = function(){
-            for (let i = 0; i < 1000; i++) {
-                var className = "show_json" + i;
-                const text = document.getElementById(className).innerText;
+            for (let i = 1; i < 1000; i++) {
+                var id = "show_json" + i;
+                const text = document.getElementById(id).innerText;
                 if (text) {
                     const result = JSON.stringify(JSON.parse(text), null, 100);
-                    document.getElementById(className).innerHTML = "<pre>" + result + "</pre>";
+                    document.getElementById(id).innerHTML = "<pre>" + result + "</pre>";
                 }
             }
         }
@@ -53,7 +53,7 @@
     <tr>
         <td>200</td>
         <td colspan="3">
-            <p id="show_json">
+            <p id="show_json1">
                 {
                 "id": 0,
                 "lastLoginTime": 0,
@@ -98,7 +98,13 @@
     <tr>
         <td>200</td>
         <td colspan="3">
-            xx
+            <p id="show_json2">
+                {
+                "id": 0,
+                "lastLoginTime": 0,
+                "username": "string"
+                }
+            </p>
         </td>
     </tr>
 </table>
@@ -136,7 +142,13 @@
     <tr>
         <td>200</td>
         <td colspan="3">
-            xx
+            <p id="show_json3">
+                {
+                "id": 0,
+                "lastLoginTime": 0,
+                "username": "string"
+                }
+            </p>
         </td>
     </tr>
 </table>

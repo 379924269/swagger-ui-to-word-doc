@@ -23,3 +23,4 @@
 
 ### FQA
 - 1.`特别注意`：在fastjson解析json数据的时候，key如果有$符号，解析有点问题，处理：$全部替换为空。 
+- 2. 分页注意：如果分页结果不是total,rows, 就修改一下dealResponse。
