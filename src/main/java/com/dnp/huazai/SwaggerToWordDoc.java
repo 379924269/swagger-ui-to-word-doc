@@ -8,153 +8,136 @@ import org.apache.commons.io.IOUtils;
 import java.io.*;
 
 /**
- * @author huazai
- * @description swagger-ui转doc文档， 通过api/doc获取json数据，然后通过json数据转换为html table，然后保存为.doc格式,注意：
- * 1、fastjson 解析带上了$符号的key解析有问题
- * @date 2020/6/22
+ * description:
+ *
+ * @author: 华仔
+ * @date: 2020/8/18
  */
 public class SwaggerToWordDoc {
     static int ID = 0;
 
     public static void convert() {
         try {
-            JSONObject jsonObject = getSwaggerJsonData();
-
-            JSONObject infoObject = jsonObject.getJSONObject("info");
+            JSONObject jsonData = getSwaggerJsonData();
+            JSONObject info = jsonData.getJSONObject("info");
             /* controller类的描述，tags是一个数组 每个数组作用有下面的字段 "name": "video-controller","description": "ptt视频采集相关信息" */
-            JSONArray tags = jsonObject.getJSONArray("tags");
+            JSONArray tags = jsonData.getJSONArray("tags");
             /* requestPathsJsonObject 请求路径和参数等 */
-            JSONObject pathsJsonObject = jsonObject.getJSONObject("paths");
+            JSONObject paths = jsonData.getJSONObject("paths");
             /* 定义的一些实体类返回参数 */
-            JSONObject definitions = jsonObject.getJSONObject("definitions");
+            JSONObject definitions = jsonData.getJSONObject("definitions");
 
-            StringBuilder generateHtmlBuilder = new StringBuilder();
+            StringBuilder htmlBuilder = new StringBuilder();
+            generateHtml(info, tags, paths, definitions, htmlBuilder);
 
-            generateHtmlBuilder.append(createHtmlHead(infoObject.getString("title")));
+            IOUtils.write(htmlBuilder.toString().getBytes(), new BufferedOutputStream(new FileOutputStream(new File("SwaggerData.html"))));
+            IOUtils.write(htmlBuilder.toString().getBytes(), new BufferedOutputStream(new FileOutputStream(new File("SwaggerData.doc"))));
 
-            int tagsLength = tags.size();
-            for (int i = 0; i < tagsLength; i++) {
-                generateHtmlBuilder.append("<h2>").append(tags.getJSONObject(i).getString("description")).append("</h2>");
-
-                String targName = tags.getJSONObject(i).getString("name");
-                for (String keyName : pathsJsonObject.keySet()) {
-                    boolean isGet = pathsJsonObject.getJSONObject(keyName).containsKey("get");
-                    boolean isPost = pathsJsonObject.getJSONObject(keyName).containsKey("post");
-                    boolean isPut = pathsJsonObject.getJSONObject(keyName).containsKey("put");
-                    boolean isDelete = pathsJsonObject.getJSONObject(keyName).containsKey("delete");
-                    if (isGet) {
-                        JSONObject getRequestMehtodJsonObject = pathsJsonObject.getJSONObject(keyName).getJSONObject("get");
-                        String getPiOperationValue = getRequestMehtodJsonObject.getString("summary");
-                        if (targName.equalsIgnoreCase(getRequestMehtodJsonObject.getJSONArray("tags").get(0).toString())) {
-                            generateTable(definitions, generateHtmlBuilder, keyName, getPiOperationValue, getRequestMehtodJsonObject);
-                            generateHtmlBuilder.append("</table>");
-                        }
-                    }
-                    if (isPost) {
-                        JSONObject postrequestMehtodJsonObject = pathsJsonObject.getJSONObject(keyName).getJSONObject("post");
-                        String postapiOperationValue = postrequestMehtodJsonObject.getString("summary");
-                        if (targName.equalsIgnoreCase(postrequestMehtodJsonObject.getJSONArray("tags").get(0).toString())) {
-                            generateTable(definitions, generateHtmlBuilder, keyName, postapiOperationValue, postrequestMehtodJsonObject);
-                            generateHtmlBuilder.append("</table>");
-                        }
-
-                    }
-                    if (isPut) {
-                        JSONObject putrequestMehtodJsonObject = pathsJsonObject.getJSONObject(keyName).getJSONObject("put");
-                        String putapiOperationValue = putrequestMehtodJsonObject.getString("summary");
-                        if (targName.equalsIgnoreCase(putrequestMehtodJsonObject.getJSONArray("tags").get(0).toString())) {
-                            generateTable(definitions, generateHtmlBuilder, keyName, putapiOperationValue, putrequestMehtodJsonObject);
-                            generateHtmlBuilder.append("</table>");
-                        }
-                    }
-                    if (isDelete) {
-                        JSONObject deleterequestMehtodJsonObject = pathsJsonObject.getJSONObject(keyName).getJSONObject("delete");
-                        String deleteapiOperationValue = deleterequestMehtodJsonObject.getString("summary");
-                        if (targName.equalsIgnoreCase(deleterequestMehtodJsonObject.getJSONArray("tags").get(0).toString())) {
-                            generateTable(definitions, generateHtmlBuilder, keyName, deleteapiOperationValue, deleterequestMehtodJsonObject);
-                            generateHtmlBuilder.append("</table>");
-                        }
-                    }
-
-                }
-            }
-            generateHtmlBuilder.append("</body>\n" +
-                    "</html>");
-            System.out.println("generateHtmlBuilder = " + generateHtmlBuilder.toString());
-
-            IOUtils.write(generateHtmlBuilder.toString().getBytes(), new BufferedOutputStream(new FileOutputStream(new File("SwaggerData.html"))));
-            IOUtils.write(generateHtmlBuilder.toString().getBytes(), new BufferedOutputStream(new FileOutputStream(new File("SwaggerData.doc"))));
+            System.out.println("generateHtmlBuilder = " + htmlBuilder.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void generateTable(JSONObject definitions, StringBuilder generateHtmlBuilder, String keyName, String ApiName, JSONObject requestMehtodJsonObject) {
-        generateHtmlBuilder.append("<h3>").append(ApiName).append("</h3>");
+    private static void generateHtml(JSONObject info, JSONArray tags, JSONObject paths, JSONObject definitions, StringBuilder htmlBuilder) {
+        createHtmlHead(info, htmlBuilder);
 
-        generateHtmlBuilder.append("<table border=\"1\">");
-//                        stringBuffer.append("<caption><h3 align=\"left\">" + apiOperationValue + "</h3></caption>");
-        generateHtmlBuilder.append("<tr>\n" + "        <td colspan=\"4\">")
-                .append(ApiName)
-                .append("</td>\n    </tr>");
-        generateHtmlBuilder.append("<tr>\n" + "        <td>url</td>\n" + "        <td colspan=\"3\">")
-                .append(keyName)
-                .append("\n        </td>\n    </tr>");
+        for (int i = 0; i < tags.size(); i++) {
+            createSecondaryTitle(tags, htmlBuilder, i);
 
-        generateHtmlBuilder.append(" <tr>\n" +
-                "        <td>字段名称</td>\n" +
-                "        <td>字段类型</td>\n" +
-                "        <td>是否必须</td>\n" +
-                "        <td>字段描述</td>\n" +
-                "    </tr>");
-        JSONArray requestParametersArray = requestMehtodJsonObject.getJSONArray("parameters");
-        if (requestParametersArray != null) {
-            for (int j = 0; j < requestParametersArray.size(); j++) {
-                JSONObject requestParametersObject = requestParametersArray.getJSONObject(j);
-                generateHtmlBuilder.append(" <tr>\n" + "        <td>").append(requestParametersObject.getString("name")).append("</td>\n").append("        <td>").append(requestParametersObject.getString("type")).append("</td>\n").append("        <td>").append(requestParametersObject.getString("required")).append("</td>\n").append("        <td>").append(requestParametersObject.getString("description")).append("</td>\n").append("    </tr>");
+            String targController = tags.getJSONObject(i).getString("name");
+            for (String path : paths.keySet()) {
+                JSONObject pathMethods = paths.getJSONObject(path);
+
+                for (String pathMethod : pathMethods.keySet()) {
+                    JSONObject methodData = paths.getJSONObject(path).getJSONObject(pathMethod);
+                    String methodDataSummary = methodData.getString("summary");
+                    String methodDataController = methodData.getJSONArray("tags").get(0).toString();
+                    if (targController.equalsIgnoreCase(methodDataController)) {
+                        generateTable(definitions, htmlBuilder, path, methodDataSummary, methodData, pathMethod);
+                    }
+                }
             }
-        } else {
-            generateHtmlBuilder.append(" <tr>\n" +
-                    "        <td>无</td>\n" +
-                    "        <td>无</td>\n" +
-                    "        <td>无</td>\n" +
-                    "        <td>无</td>\n" +
-                    "    </tr>");
         }
 
-        generateHtmlBuilder.append(" <tr>\n" +
-                "        <td>返回状态</td>\n" +
-                "        <td colspan=\"3\">返回结果</td>\n" +
-                "    </tr>");
-
-        JSONObject pathsResponses = requestMehtodJsonObject.getJSONObject("responses");
-        dealResponse(definitions, generateHtmlBuilder, pathsResponses);
+        htmlBuilder.append("</body>\n</html>");
     }
 
-    private static void dealResponse(JSONObject definitions, StringBuilder generateHtmlBuilder, JSONObject pathsResponses) {
-        System.out.println("pathsResponses = " + pathsResponses);
-        for (String responseKey : pathsResponses.keySet()) {
-            JSONObject pathsResponsekey = pathsResponses.getJSONObject(responseKey);
-            System.out.println("ref = " + pathsResponsekey);
+    private static void createSecondaryTitle(JSONArray tags, StringBuilder htmlBuilder, int i) {
+        String title = tags.getJSONObject(i).getString("description");
+        htmlBuilder.append("<h2>" + title + "</h2>");
+    }
 
-            if (!pathsResponsekey.containsKey("schema")) {
-                generateHtmlBuilder.append(returnResultInfor(responseKey + "  //" + pathsResponsekey.getString("description"), "无"));
+    private static void generateTable(JSONObject definitions, StringBuilder htmlBuilder,
+                                      String keyName, String methodSummary, JSONObject methodData, String method) {
+        htmlBuilder.append("<h3>" + methodSummary + "</h3>" +
+                "<table border=\"1\" width = \"80%\">" +
+                "   <tr>\n" +
+                "       <td colspan=\"4\">" + methodSummary + "</td>\n" +
+                "   </tr>" +
+                "   <tr>\n" +
+                "       <td>url(" + method + ")</td>\n" +
+                "       <td colspan=\"3\">" + keyName + "\n</td>\n" +
+                "   </tr>" +
+                "   <tr>\n" +
+                "       <td>字段名称</td>\n" +
+                "       <td>字段类型</td>\n" +
+                "       <td>是否必须</td>\n" +
+                "       <td>字段描述</td>\n" +
+                "   </tr>");
+        JSONArray paramsArray = methodData.getJSONArray("parameters");
+        if (paramsArray != null) {
+            for (int j = 0; j < paramsArray.size(); j++) {
+                JSONObject paramObj = paramsArray.getJSONObject(j);
+                htmlBuilder.append("<tr>\n" +
+                        "<td>" + paramObj.getString("name") + "</td>\n" +
+                        "<td>" + paramObj.getString("type") + "</td>\n" +
+                        "<td>" + paramObj.getString("required") + "</td>\n" +
+                        "<td>" + paramObj.getString("description") + "</td>\n" +
+                        "</tr>");
+            }
+        } else {
+            htmlBuilder.append("<tr>\n" +
+                    "   <td>无</td>\n" +
+                    "   <td>无</td>\n" +
+                    "   <td>无</td>\n" +
+                    "   <td>无</td>\n" +
+                    "</tr>");
+        }
+
+        htmlBuilder.append("<tr>\n" +
+                "   <td>返回状态</td>\n" +
+                "   <td colspan=\"3\">返回结果</td>\n" +
+                "</tr>");
+
+        JSONObject response = methodData.getJSONObject("responses");
+        dealResponse(definitions, htmlBuilder, response);
+
+        htmlBuilder.append("</table>");
+    }
+
+    private static void dealResponse(JSONObject definitions, StringBuilder htmlBuilder, JSONObject response) {
+        for (String ok200 : response.keySet()) {
+            JSONObject ok200Obj = response.getJSONObject(ok200);
+
+            if (!ok200Obj.containsKey("schema")) {
+                generateResultRow(ok200 + "  //" + ok200Obj.getString("description"), "无", htmlBuilder);
             } else {
-                for (String resultKey : pathsResponsekey.keySet()) {
+                for (String resultKey : ok200Obj.keySet()) {
                     if (resultKey.equals("schema")) {
                         String ref = null;
-                        if (pathsResponsekey.getJSONObject(resultKey).containsKey("ref")) {
-                            ref = pathsResponsekey.getJSONObject(resultKey).getString("ref");
+                        if (ok200Obj.getJSONObject(resultKey).containsKey("ref")) {
+                            ref = ok200Obj.getJSONObject(resultKey).getString("ref");
                         } else {
-                            if (pathsResponsekey.getJSONObject(resultKey).containsKey("items")) {
-                                ref = pathsResponsekey.getJSONObject(resultKey).getJSONObject("items").getString("ref");
+                            if (ok200Obj.getJSONObject(resultKey).containsKey("items")) {
+                                ref = ok200Obj.getJSONObject(resultKey).getJSONObject("items").getString("ref");
                             }
                         }
 
                         if (ref != null) {
-                            generateHtmlBuilder.append(returnJsonResultInfor(responseKey, getRefValue(definitions, ref).toString()));
+                            generateResultRow(ok200, getRefValue(definitions, ref).toString(), htmlBuilder);
                         } else {
-                            generateHtmlBuilder.append(returnJsonResultInfor(responseKey, new JSONObject().toString()));
+                            generateResultRow(ok200, new JSONObject().toString(), htmlBuilder);
                         }
                     }
                 }
@@ -168,62 +151,48 @@ public class SwaggerToWordDoc {
         return JSONObject.parseObject(xx);
     }
 
-    private static String createHtmlHead(String docTitle) {
-        return "<!DOCTYPE html>\n" +
-                "<html lang=\"en\">\n" +
-                "<head>\n" +
-                "<meta charset=\"UTF-8\">\n" +
-                "    <title>Title</title>" +
-                " <script type=\"text/javascript\">\n" +
-                "        window.onload = function(){\n" +
-                "            for (let i = 1; i < 1000; i++) {\n" +
-                "                var id = \"show_json\" + i;\n" +
-                "                const text = document.getElementById(id).innerText;\n" +
-                "                if (text) {\n" +
-                "                    const result = JSON.stringify(JSON.parse(text), null, 100);\n" +
-                "                    document.getElementById(id).innerHTML = \"<pre>\" + result + \"</pre>\";\n" +
-                "                }\n" +
-                "            }\n" +
-                "        }\n" +
-                "    </script>" +
-                "</head>\n" +
-                "<body>" +
-                "<h1 align=\"center\">" + docTitle + "</h1>";
+    private static void createHtmlHead(JSONObject info, StringBuilder htmlBuilder) {
+        String docTitle = info.getString("title");
+        String head =
+                "<!DOCTYPE html>\n" +
+                        "<html lang=\"en\">\n" +
+                        "<head>\n" +
+                        "   <meta charset=\"UTF-8\">\n" +
+                        "   <title>Title</title>" +
+                        "       <script type=\"text/javascript\">\n" +
+                        "           window.onload = function(){\n" +
+                        "               for (let i = 1; i < 1000; i++) {\n" +
+                        "                   var id = \"show_json\" + i;\n" +
+                        "                   const text = document.getElementById(id).innerText;\n" +
+                        "                   if (text) {\n" +
+                        "                       const result = JSON.stringify(JSON.parse(text), null, 100);\n" +
+                        "                       document.getElementById(id).innerHTML = \"<pre>\" + result + \"</pre>\";\n" +
+                        "                }\n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "       </script>" +
+                        "       </head>\n" +
+                        "<body>" +
+                        "<h1 align=\"center\">" + docTitle + "</h1>";
+        htmlBuilder.append(head);
     }
 
     /**
      * description: 生成结果table
      *
-     * @param responseKey    : 返回结果status
-     * @param responseResult : 返回结果描述
+     * @param resStatus : 返回结果status
+     * @param resResult : 返回结果描述
      * @return : java.lang.String
      */
-    private static String returnResultInfor(String responseKey, String responseResult) {
-        return "<tr>\n" +
-                "        <td>" + responseKey + "</td>\n" +
-                "        <td colspan=\"3\">\n" +
-                "            " + responseResult + "\n" +
-                "        </td>\n" +
-                "    </tr>";
-    }
-
-    /**
-     * description: 生成结果table
-     *
-     * @param responseKey    : 返回结果status
-     * @param responseResult : 返回结果描述
-     * @return : java.lang.String
-     */
-    private static String returnJsonResultInfor(String responseKey, String responseResult) {
+    private static void generateResultRow(String resStatus, String resResult, StringBuilder htmlBuilder) {
         ID++;
-        return "<tr>\n" +
-                "        <td>" + responseKey + "</td>\n" +
-                "        <td colspan=\"3\">\n" +
-                " <p id=\"show_json" + ID + "\">" +
-                "            " + responseResult + "\n" +
-                " </p>" +
-                "        </td>\n" +
-                "    </tr>";
+        String resultHtmlRow = "<tr>\n" +
+                "   <td>" + resStatus + "</td>\n" +
+                "   <p id=\"show_json" + ID + "\">" +
+                "       <td colspan=\"3\">" + resResult + "</td>\n" +
+                "   </p>" +
+                "</tr>";
+        htmlBuilder.append(resultHtmlRow);
     }
 
     /**
@@ -235,21 +204,31 @@ public class SwaggerToWordDoc {
      * @return : com.alibaba.fastjson.JSONObject json：{字段：类型 //描述 }
      */
     private static JSONObject getRefValue(JSONObject definitions, String ref) {
-        JSONObject propertiesKeyNameJsonObject = new JSONObject();
-        String value = ref.substring(ref.lastIndexOf("/") + 1);
-        JSONObject propertieJsonObject = definitions.getJSONObject(value).getJSONObject("properties");
+        JSONObject refValues = new JSONObject();
+        String definitionsObject = ref.substring(ref.lastIndexOf("/") + 1);
+        JSONObject properties = definitions.getJSONObject(definitionsObject).getJSONObject("properties");
 
-        for (String propertiesKeyName : propertieJsonObject.keySet()) {
-            if (propertiesKeyName.equals("rows")) {
-                String rowsRef = propertieJsonObject.getJSONObject("rows").getJSONObject("items").getString("ref");
-                propertiesKeyNameJsonObject.put("rows", getRefValue(definitions, rowsRef));
-            } else if (propertiesKeyName.equals("records")) {
-                String rowsRef = propertieJsonObject.getJSONObject("records").getJSONObject("items").getString("ref");
-                propertiesKeyNameJsonObject.put("records", getRefValue(definitions, rowsRef));
+        for (String propertiesKeyName : properties.keySet()) {
+            JSONObject propertiesValue = properties.getJSONObject(propertiesKeyName);
+            if (propertiesValue.containsKey("ref")) {
+                String rowsRef = propertiesValue.getString("ref");
+                refValues.put(propertiesKeyName, getRefValue(definitions, rowsRef));
+            } else if (propertiesValue.containsKey("items") && propertiesValue.getJSONObject("items").containsKey("ref")) {
+                boolean isArray = properties.getJSONObject(propertiesKeyName).getString("type").equals("array");
+                if (isArray) {
+                    String rowsRef = propertiesValue.getJSONObject("items").getString("ref");
+                    JSONArray jsonArray = new JSONArray();
+                    jsonArray.add(getRefValue(definitions, rowsRef));
+                    refValues.put(propertiesKeyName, jsonArray);
+                } else {
+                    String rowsRef = propertiesValue.getString("ref");
+                    refValues.put(propertiesKeyName, getRefValue(definitions, rowsRef));
+                }
             } else {
-                propertiesKeyNameJsonObject.put(propertiesKeyName, propertieJsonObject.getJSONObject(propertiesKeyName).getString("type") + "  //" + propertieJsonObject.getJSONObject(propertiesKeyName).getString("description"));
+                refValues.put(propertiesKeyName, properties.getJSONObject(propertiesKeyName)
+                        .getString("type") + "  //" + properties.getJSONObject(propertiesKeyName).getString("description"));
             }
         }
-        return propertiesKeyNameJsonObject;
+        return refValues;
     }
 }

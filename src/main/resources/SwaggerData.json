@@ -1,39 +1,15 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "项目的一些返回值描述:</br>1、管理端需要验证的接口，在请求的header加上token</br>2、常见返回状态: status:400 bad request 参数或请求有问题;status:405 请求方法不允许;status200 操作成功; status:500 服务器内部错误; status:1000 服务器自定义错误，返回对象{code：1000， message：错误消息}</br>注意：排序字段order、sort没有实现，默认是id，desc，有具体需求，具体实现",
+    "description": "项目的一些返回值描述:</br>1、管理端需要验证的接口，在请求的header加上token</br>2、常见返回状态: status:400 bad request 参数或请求有问题;status:405 请求方法不允许;status200 操作成功; status:500 服务器内部错误;</br>注意：排序字段order、sort没有实现，默认是id，desc，有具体需求，具体实现</br>管理端错误码汇总文档下载地址，协议、ip、端口自己调整一下，地址如下:</br>http://192.168.0.202:8001/solrLogService/resources/doc/error.docx",
     "version": "V1",
-    "title": "新闻项目"
+    "title": "solr查询日志服务"
   },
-  "host": "localhost:8080",
-  "basePath": "/news",
+  "host": "192.168.0.202:4430",
+  "basePath": "/solrLogService",
   "tags": [
     {
-      "name": "APP_客户端接口",
-      "description": "APP News Controller"
-    },
-    {
-      "name": "comment-controller",
-      "description": "新闻评论"
-    },
-    {
-      "name": "comment-like-controller",
-      "description": "点赞品论"
-    },
-    {
-      "name": "config-controller",
-      "description": "配置表"
-    },
-    {
-      "name": "cover-rotation-controller",
-      "description": "新闻显示列表,通过id排序轮播列表"
-    },
-    {
-      "name": "cover-templete-controller",
-      "description": "新闻模板样式"
-    },
-    {
-      "name": "logout-controller",
+      "name": "login-controller",
       "description": "登录和退出接口"
     },
     {
@@ -41,1422 +17,23 @@
       "description": "管理员表"
     },
     {
-      "name": "news-controller",
-      "description": "新闻表"
-    },
-    {
-      "name": "news-like-controller",
-      "description": "点赞新闻"
-    },
-    {
-      "name": "news-sources-controller",
-      "description": "新闻来源"
-    },
-    {
-      "name": "news-top-controller",
-      "description": "新闻置顶列表"
-    },
-    {
-      "name": "news-type-controller",
-      "description": "新闻类型"
-    },
-    {
-      "name": "permission-controller",
-      "description": "资源表"
-    },
-    {
-      "name": "reply-comment-controller",
-      "description": "回复评论表"
-    },
-    {
-      "name": "reply-comment-like-controller",
-      "description": "点赞品论回复"
-    },
-    {
       "name": "role-controller",
       "description": "角色类型及管理员类型"
     },
     {
-      "name": "role-permission-controller",
-      "description": "角色表"
+      "name": "third-part-controller",
+      "description": "开放的接口"
     },
     {
-      "name": "up-and-download-file-controller",
-      "description": "文件上传下载接口"
-    },
-    {
-      "name": "users-controller",
-      "description": "用户信息"
+      "name": "user-log-controller",
+      "description": "用户日志"
     }
   ],
   "paths": {
-    "/api/logout": {
+    "/login/login": {
       "post": {
         "tags": [
-          "logout-controller"
-        ],
-        "summary": "退出",
-        "description": "退出",
-        "operationId": "logoutUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/client/news": {
-      "get": {
-        "tags": [
-          "APP_客户端接口"
-        ],
-        "summary": "获取轮播新闻信息",
-        "description": "获取轮播新闻信息",
-        "operationId": "findAllUsingGET_1",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/APPFindAllCoverRotationVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/client/news/findAll": {
-      "get": {
-        "tags": [
-          "APP_客户端接口"
-        ],
-        "summary": "查询所有新闻信息",
-        "description": "查询所有新闻信息",
-        "operationId": "findAllUsingGET",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段: title",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "typeId",
-            "in": "query",
-            "description": "类型id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/NewsFindAllSwaggerVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/client/newsTop": {
-      "get": {
-        "tags": [
-          "APP_客户端接口"
-        ],
-        "summary": "查询所有新闻置顶列表",
-        "description": "查询所有新闻置顶列表",
-        "operationId": "findAllUsingGET_2",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/News对象"
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/client/newsType": {
-      "get": {
-        "tags": [
-          "APP_客户端接口"
-        ],
-        "summary": "查询所有新闻类型",
-        "description": "查询所有新闻类型",
-        "operationId": "findAllUsingGET_3",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/NewsType对象"
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/comment": {
-      "get": {
-        "tags": [
-          "comment-controller"
-        ],
-        "summary": "查询所有新闻评论",
-        "description": "查询所有新闻评论",
-        "operationId": "findAllUsingGET_4",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "comment-controller"
-        ],
-        "summary": "添加新闻评论",
-        "description": "添加新闻评论",
-        "operationId": "saveUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "content",
-            "in": "query",
-            "description": "评论内容",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "newsId",
-            "in": "query",
-            "description": "新闻id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "pttUserId",
-            "in": "query",
-            "description": "品论用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/comment/{id}": {
-      "get": {
-        "tags": [
-          "comment-controller"
-        ],
-        "summary": "查询新闻评论详情",
-        "description": "查询新闻评论详情",
-        "operationId": "findByIdUsingGET",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻评论id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/Comment对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "comment-controller"
-        ],
-        "summary": "通过id修改新闻评论",
-        "description": "通过id修改新闻评论",
-        "operationId": "updateByIdUsingPUT",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "content",
-            "in": "query",
-            "description": "评论内容",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "createTime",
-            "in": "query",
-            "description": "创建时间",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理ID",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "newsId",
-            "in": "query",
-            "description": "新闻id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "pttUserId",
-            "in": "query",
-            "description": "品论用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "comment-controller"
-        ],
-        "summary": "删除新闻评论",
-        "description": "修改新闻评论",
-        "operationId": "deleteByIdUsingDELETE",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻评论id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/commentLike": {
-      "get": {
-        "tags": [
-          "comment-like-controller"
-        ],
-        "summary": "查询所有点赞品论",
-        "description": "查询所有点赞品论",
-        "operationId": "findAllUsingGET_5",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "comment-like-controller"
-        ],
-        "summary": "添加点赞品论",
-        "description": "添加点赞品论",
-        "operationId": "saveUsingPOST_1",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "commentId",
-            "in": "query",
-            "description": "品论id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "pttUserId",
-            "in": "query",
-            "description": "点赞用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/commentLike/{id}": {
-      "get": {
-        "tags": [
-          "comment-like-controller"
-        ],
-        "summary": "查询点赞品论详情",
-        "description": "查询点赞品论详情",
-        "operationId": "findByIdUsingGET_1",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "点赞品论id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/CommentLike对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "comment-like-controller"
-        ],
-        "summary": "通过id修改点赞品论",
-        "description": "通过id修改点赞品论",
-        "operationId": "updateByIdUsingPUT_1",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "commentId",
-            "in": "query",
-            "description": "品论id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理ID",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "pttUserId",
-            "in": "query",
-            "description": "点赞用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "comment-like-controller"
-        ],
-        "summary": "删除点赞品论",
-        "description": "修改点赞品论",
-        "operationId": "deleteByIdUsingDELETE_1",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "点赞品论id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/config": {
-      "get": {
-        "tags": [
-          "config-controller"
-        ],
-        "summary": "查询所有配置表",
-        "description": "查询所有配置表",
-        "operationId": "findAllUsingGET_6",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "config-controller"
-        ],
-        "summary": "添加配置表",
-        "description": "添加配置表",
-        "operationId": "saveUsingPOST_2",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "coverRotationTime",
-            "in": "query",
-            "description": "客户端封面轮播时间，单位：秒",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "newsCheckFlag",
-            "in": "query",
-            "description": "新闻审核标志，1：要审核，0：不需要审核",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "pttAuthUrl",
-            "in": "query",
-            "description": "ptt认证服务器地址",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "pttServerUrl",
-            "in": "query",
-            "description": "ptt服务的url",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "showImage",
-            "in": "query",
-            "description": "要闻中显示图片：0：不显示， 1：显示",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/config/syncPttUses": {
-      "post": {
-        "tags": [
-          "config-controller"
-        ],
-        "summary": "同步添加或跟新ptt用户信息",
-        "description": "同步判断：\n同步后，比较登录后返回的同步时间和轮询配置中的同步时间，不一致说明同步成功",
-        "operationId": "syncPttUsesUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/config/{id}": {
-      "get": {
-        "tags": [
-          "config-controller"
-        ],
-        "summary": "查询配置表详情",
-        "description": "查询配置表详情",
-        "operationId": "findByIdUsingGET_2",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "配置表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/Config对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "config-controller"
-        ],
-        "summary": "通过id修改配置表",
-        "description": "通过id修改配置表",
-        "operationId": "updateByIdUsingPUT_2",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "coverRotationTime",
-            "in": "query",
-            "description": "客户端封面轮播时间，单位：秒",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理ID",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "newsCheckFlag",
-            "in": "query",
-            "description": "新闻审核标志，1：要审核，0：不需要审核",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "pttAuthUrl",
-            "in": "query",
-            "description": "ptt认证服务器地址",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "pttServerUrl",
-            "in": "query",
-            "description": "ptt务器地址",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "showImage",
-            "in": "query",
-            "description": "要闻中显示图片：0：不显示， 1：显示",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "syncPttUserTime",
-            "in": "query",
-            "description": "同步ptt用户信息时间，单位：毫秒",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "config-controller"
-        ],
-        "summary": "删除配置表",
-        "description": "修改配置表",
-        "operationId": "deleteByIdUsingDELETE_2",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "配置表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/coverTemplete": {
-      "get": {
-        "tags": [
-          "cover-templete-controller"
-        ],
-        "summary": "查询所有新闻模板样式",
-        "description": "查询所有新闻模板样式",
-        "operationId": "findAllUsingGET_8",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "cover-templete-controller"
-        ],
-        "summary": "添加新闻模板样式",
-        "description": "添加新闻模板样式",
-        "operationId": "saveUsingPOST_4",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "title",
-            "in": "query",
-            "description": "封面模板标题",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "url",
-            "in": "query",
-            "description": "封面模板地址",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/coverTemplete/{id}": {
-      "get": {
-        "tags": [
-          "cover-templete-controller"
-        ],
-        "summary": "查询新闻模板样式详情",
-        "description": "查询新闻模板样式详情",
-        "operationId": "findByIdUsingGET_4",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻模板样式id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/CoverTemplete对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "cover-templete-controller"
-        ],
-        "summary": "通过id修改新闻模板样式",
-        "description": "通过id修改新闻模板样式",
-        "operationId": "updateByIdUsingPUT_4",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理ID",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "title",
-            "in": "query",
-            "description": "封面模板标题",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "url",
-            "in": "query",
-            "description": "封面模板地址",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "cover-templete-controller"
-        ],
-        "summary": "删除新闻模板样式",
-        "description": "修改新闻模板样式",
-        "operationId": "deleteByIdUsingDELETE_4",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻模板样式id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/file/downloadFile": {
-      "get": {
-        "tags": [
-          "up-and-download-file-controller"
-        ],
-        "summary": "下载文件",
-        "description": "下载文件",
-        "operationId": "uploadFileUsingGET",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "relaticePath",
-            "in": "query",
-            "description": "文件路径",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/file/uploadFile": {
-      "post": {
-        "tags": [
-          "up-and-download-file-controller"
-        ],
-        "summary": "上传文件",
-        "description": "上传文件",
-        "operationId": "uploadFileUsingPOST",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "file",
-            "in": "formData",
-            "description": "file",
-            "required": false,
-            "type": "file"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/login": {
-      "post": {
-        "tags": [
-          "logout-controller"
+          "login-controller"
         ],
         "summary": "登录接口",
         "operationId": "loginUsingPOST",
@@ -1490,8 +67,37 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/LoginSuccessVo对象"
+              "$ref": "#/definitions/LoginVo对象"
             }
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/login/logout": {
+      "post": {
+        "tags": [
+          "login-controller"
+        ],
+        "summary": "退出",
+        "description": "退出",
+        "operationId": "logoutUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json;charset=UTF-8"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         },
         "security": [
@@ -1511,7 +117,7 @@
         ],
         "summary": "查询所有管理员表",
         "description": "查询所有管理员表",
-        "operationId": "findAllUsingGET_9",
+        "operationId": "findAllUsingGET",
         "produces": [
           "application/json;charset=UTF-8"
         ],
@@ -1559,7 +165,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "type": "object"
+              "$ref": "#/definitions/ManagerFindAllVo对象"
             }
           }
         },
@@ -1578,7 +184,7 @@
         ],
         "summary": "添加管理员表",
         "description": "添加管理员表",
-        "operationId": "saveUsingPOST_6",
+        "operationId": "saveUsingPOST",
         "consumes": [
           "application/json"
         ],
@@ -1597,7 +203,7 @@
           {
             "name": "mobile",
             "in": "query",
-            "description": "手机号码,可以用来登录",
+            "description": "号码",
             "required": false,
             "type": "string",
             "allowEmptyValue": false
@@ -1654,65 +260,6 @@
         "deprecated": false
       }
     },
-    "/manager/updatePassword": {
-      "post": {
-        "tags": [
-          "manager-controller"
-        ],
-        "summary": "修改密码",
-        "description": "修改密码",
-        "operationId": "saveUsingPOST_5",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "managerId",
-            "in": "query",
-            "description": "管理员id",
-            "required": true,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "newPassword",
-            "in": "query",
-            "description": "新密码",
-            "required": true,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "oldPassword",
-            "in": "query",
-            "description": "旧密码",
-            "required": true,
-            "type": "string",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
     "/manager/{id}": {
       "get": {
         "tags": [
@@ -1720,7 +267,7 @@
         ],
         "summary": "查询管理员表详情",
         "description": "查询管理员表详情",
-        "operationId": "findByIdUsingGET_5",
+        "operationId": "findByIdUsingGET",
         "produces": [
           "application/json;charset=UTF-8"
         ],
@@ -1757,7 +304,7 @@
         ],
         "summary": "通过id修改管理员表",
         "description": "通过id修改管理员表",
-        "operationId": "updateByIdUsingPUT_5",
+        "operationId": "updateByIdUsingPUT",
         "consumes": [
           "application/json"
         ],
@@ -1783,6 +330,7 @@
           {
             "name": "id",
             "in": "query",
+            "description": "代理ID",
             "required": false,
             "type": "integer",
             "format": "int32"
@@ -1790,7 +338,7 @@
           {
             "name": "lastLoginTime",
             "in": "query",
-            "description": "最后登录时间",
+            "description": "最后登录时间，单位毫秒",
             "required": false,
             "type": "integer",
             "format": "int64"
@@ -1850,9 +398,9 @@
         "tags": [
           "manager-controller"
         ],
-        "summary": "删除管理员表, 默认管理员不能删除",
-        "description": "删除管理员表, 默认管理员不能删除",
-        "operationId": "deleteByIdUsingDELETE_5",
+        "summary": "删除管理员表",
+        "description": "修改管理员表",
+        "operationId": "deleteByIdUsingDELETE",
         "produces": [
           "application/json;charset=UTF-8"
         ],
@@ -1881,2651 +429,6 @@
         "deprecated": false
       }
     },
-    "/module/coverRotation": {
-      "get": {
-        "tags": [
-          "cover-rotation-controller"
-        ],
-        "summary": "查询所有新闻显示列表,通过id排序轮播列表",
-        "description": "查询所有新闻显示列表,通过id排序轮播列表",
-        "operationId": "findAllUsingGET_7",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "cover-rotation-controller"
-        ],
-        "summary": "添加新闻显示列表,通过id排序轮播列表",
-        "description": "添加新闻显示列表,通过id排序轮播列表",
-        "operationId": "saveUsingPOST_3",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "imageUrl",
-            "in": "query",
-            "description": "图片地址，只能是一张图片",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "newsId",
-            "in": "query",
-            "description": "新闻id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/module/coverRotation/{id}": {
-      "get": {
-        "tags": [
-          "cover-rotation-controller"
-        ],
-        "summary": "查询新闻显示列表,通过id排序轮播列表详情",
-        "description": "查询新闻显示列表,通过id排序轮播列表详情",
-        "operationId": "findByIdUsingGET_3",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻显示列表,通过id排序轮播列表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/CoverRotation对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "cover-rotation-controller"
-        ],
-        "summary": "通过id修改新闻显示列表,通过id排序轮播列表",
-        "description": "通过id修改新闻显示列表,通过id排序轮播列表",
-        "operationId": "updateByIdUsingPUT_3",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理ID",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "imageUrl",
-            "in": "query",
-            "description": "图片地址，只能是一张图片",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "newsId",
-            "in": "query",
-            "description": "新闻id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "cover-rotation-controller"
-        ],
-        "summary": "删除新闻显示列表,通过id排序轮播列表",
-        "description": "修改新闻显示列表,通过id排序轮播列表",
-        "operationId": "deleteByIdUsingDELETE_3",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻显示列表,通过id排序轮播列表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/news": {
-      "get": {
-        "tags": [
-          "news-controller"
-        ],
-        "summary": "查询所有新闻表",
-        "description": "查询所有新闻表",
-        "operationId": "findAllUsingGET_10",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "endTime",
-            "in": "query",
-            "description": "结束时间：单位毫秒",
-            "required": false,
-            "type": "integer",
-            "format": "int64",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "newsSourcesId",
-            "in": "query",
-            "description": "新闻来源id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段: title",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "startTime",
-            "in": "query",
-            "description": "开始时间：单位毫秒",
-            "required": false,
-            "type": "integer",
-            "format": "int64",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "typeId",
-            "in": "query",
-            "description": "类型id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/NewsFindAllVo对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "news-controller"
-        ],
-        "summary": "添加新闻表",
-        "description": "添加新闻表",
-        "operationId": "saveUsingPOST_7",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "checkStatus",
-            "in": "query",
-            "description": "审核状态，1：正常， 0：待审核",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "commentCount",
-            "in": "query",
-            "description": "评论数量",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "coverImageUrlArray",
-            "in": "query",
-            "description": "封面图片地址,存的是数组：[]",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "htmlContent",
-            "in": "query",
-            "description": "生成html内容",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "htmlUrl",
-            "in": "query",
-            "description": "生成的html地址",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "managerCreatorId",
-            "in": "query",
-            "description": "管理员创建者id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "newsTempleteType",
-            "in": "query",
-            "description": "新闻模板类型，1:仅显示标题，无图片,2:显示标题和1张图片,3:显示标题合和3张图片,4:左边显示标题右边显示1张图片,5:右边显示标题左边显示1张图片",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "showStatus",
-            "in": "query",
-            "description": "显示状态，1：显示，0：不显示",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sourcesName",
-            "in": "query",
-            "description": "新闻来源",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "title",
-            "in": "query",
-            "description": "标题",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "titleStatus",
-            "in": "query",
-            "description": "标题状态，1：显示，0：不显示",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "typeId",
-            "in": "query",
-            "description": "类型id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "userCreatorId",
-            "in": "query",
-            "description": "用户创建者id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "visitCount",
-            "in": "query",
-            "description": "访问量",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/news/{id}": {
-      "get": {
-        "tags": [
-          "news-controller"
-        ],
-        "summary": "查询新闻表详情",
-        "description": "查询新闻表详情",
-        "operationId": "findByIdUsingGET_6",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/News对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "news-controller"
-        ],
-        "summary": "通过id修改新闻表",
-        "description": "通过id修改新闻表",
-        "operationId": "updateByIdUsingPUT_6",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "checkStatus",
-            "in": "query",
-            "description": "审核状态，1：正常， 0：待审核",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "commentCount",
-            "in": "query",
-            "description": "评论数量",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "coverImageUrlArray",
-            "in": "query",
-            "description": "图片地址",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "createTime",
-            "in": "query",
-            "description": "创建时间，单位：毫秒",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "htmlContent",
-            "in": "query",
-            "description": "生成html内容",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "htmlUrl",
-            "in": "query",
-            "description": "生成的html地址",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "managerCreatorId",
-            "in": "query",
-            "description": "管理员创建者id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "newsSourcesId",
-            "in": "query",
-            "description": "新闻来源id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "newsTempleteType",
-            "in": "query",
-            "description": "新闻来源id",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "showStatus",
-            "in": "query",
-            "description": "显示状态，1：显示，0：不显示",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "title",
-            "in": "query",
-            "description": "标题",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "titleStatus",
-            "in": "query",
-            "description": "标题状态，1：显示，0：不显示",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "typeId",
-            "in": "query",
-            "description": "类型id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "userCreatorId",
-            "in": "query",
-            "description": "用户创建者id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "visitCount",
-            "in": "query",
-            "description": "访问量",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "news-controller"
-        ],
-        "summary": "删除新闻表",
-        "description": "修改新闻表",
-        "operationId": "deleteByIdUsingDELETE_6",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsLike": {
-      "get": {
-        "tags": [
-          "news-like-controller"
-        ],
-        "summary": "查询所有点赞新闻",
-        "description": "查询所有点赞新闻",
-        "operationId": "findAllUsingGET_11",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "news-like-controller"
-        ],
-        "summary": "添加点赞新闻",
-        "description": "添加点赞新闻",
-        "operationId": "saveUsingPOST_8",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "newsId",
-            "in": "query",
-            "description": "新闻id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "pttUserId",
-            "in": "query",
-            "description": "点赞用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsLike/{id}": {
-      "get": {
-        "tags": [
-          "news-like-controller"
-        ],
-        "summary": "查询点赞新闻详情",
-        "description": "查询点赞新闻详情",
-        "operationId": "findByIdUsingGET_7",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "点赞新闻id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/NewsLike对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "news-like-controller"
-        ],
-        "summary": "通过id修改点赞新闻",
-        "description": "通过id修改点赞新闻",
-        "operationId": "updateByIdUsingPUT_7",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理ID",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "newsId",
-            "in": "query",
-            "description": "新闻id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "pttUserId",
-            "in": "query",
-            "description": "点赞用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "news-like-controller"
-        ],
-        "summary": "删除点赞新闻",
-        "description": "修改点赞新闻",
-        "operationId": "deleteByIdUsingDELETE_7",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "点赞新闻id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsSources": {
-      "get": {
-        "tags": [
-          "news-sources-controller"
-        ],
-        "summary": "查询所有新闻来源",
-        "description": "查询所有新闻来源",
-        "operationId": "findAllUsingGET_12",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段：name",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/NewsSourcesFindAllVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "news-sources-controller"
-        ],
-        "summary": "添加新闻来源",
-        "description": "添加新闻来源",
-        "operationId": "saveUsingPOST_9",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "name",
-            "in": "query",
-            "description": "新闻来源名称",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsSources/deleteAll": {
-      "delete": {
-        "tags": [
-          "news-sources-controller"
-        ],
-        "summary": "删除所有新闻来源, 除了默认值",
-        "description": "删除所有新闻来源, 除了默认值",
-        "operationId": "deleteAllUsingDELETE",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsSources/findSources": {
-      "get": {
-        "tags": [
-          "news-sources-controller"
-        ],
-        "summary": "通过名称查看新闻来源",
-        "description": "通过名称查看新闻来源",
-        "operationId": "findSourcesUsingGET",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "name",
-            "in": "query",
-            "description": "新闻来源名称",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/NewsSources对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsSources/{id}": {
-      "get": {
-        "tags": [
-          "news-sources-controller"
-        ],
-        "summary": "查询新闻来源详情",
-        "description": "查询新闻来源详情",
-        "operationId": "findByIdUsingGET_8",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻来源id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/NewsSources对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "news-sources-controller"
-        ],
-        "summary": "通过id修改新闻来源",
-        "description": "通过id修改新闻来源",
-        "operationId": "updateByIdUsingPUT_8",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理ID",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "description": "新闻来源名称",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "news-sources-controller"
-        ],
-        "summary": "删除新闻来源",
-        "description": "修改新闻来源",
-        "operationId": "deleteByIdUsingDELETE_8",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻来源id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsTop": {
-      "get": {
-        "tags": [
-          "news-top-controller"
-        ],
-        "summary": "查询所有新闻置顶列表",
-        "description": "查询所有新闻置顶列表",
-        "operationId": "findAllUsingGET_13",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "news-top-controller"
-        ],
-        "summary": "添加新闻置顶列表",
-        "description": "添加新闻置顶列表",
-        "operationId": "saveUsingPOST_10",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "newsId",
-            "in": "query",
-            "description": "置顶新闻id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsTop/{id}": {
-      "get": {
-        "tags": [
-          "news-top-controller"
-        ],
-        "summary": "查询新闻置顶列表详情",
-        "description": "查询新闻置顶列表详情",
-        "operationId": "findByIdUsingGET_9",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻置顶列表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/NewsTop对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "news-top-controller"
-        ],
-        "summary": "通过id修改新闻置顶列表",
-        "description": "通过id修改新闻置顶列表",
-        "operationId": "updateByIdUsingPUT_9",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理ID",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "newsId",
-            "in": "query",
-            "description": "置顶新闻id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "news-top-controller"
-        ],
-        "summary": "删除新闻置顶列表",
-        "description": "修改新闻置顶列表",
-        "operationId": "deleteByIdUsingDELETE_9",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻置顶列表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsType": {
-      "get": {
-        "tags": [
-          "news-type-controller"
-        ],
-        "summary": "查询所有新闻类型",
-        "description": "查询所有新闻类型",
-        "operationId": "findAllUsingGET_14",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段: name",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/NewsSourcesFindAllVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "news-type-controller"
-        ],
-        "summary": "添加新闻类型",
-        "description": "添加新闻类型",
-        "operationId": "saveUsingPOST_11",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "name",
-            "in": "query",
-            "description": "新闻类型名称",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsType/deleteAll": {
-      "delete": {
-        "tags": [
-          "news-type-controller"
-        ],
-        "summary": "删除所有新闻类型, 除了默认值",
-        "description": "删除所有新闻类型, 除了默认值",
-        "operationId": "deleteAllUsingDELETE_1",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsType/findType": {
-      "get": {
-        "tags": [
-          "news-type-controller"
-        ],
-        "summary": "通过名称查看新闻来源",
-        "description": "通过名称查看新闻来源",
-        "operationId": "findTypeUsingGET",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "name",
-            "in": "query",
-            "description": "新闻类型名称",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/NewsType对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsType/updateDisplayOrder": {
-      "post": {
-        "tags": [
-          "news-type-controller"
-        ],
-        "summary": "添加新闻类型显示排序，每次修改都会覆盖前一次的,displayOrder值小的排在前面",
-        "description": "添加新闻类型显示排序",
-        "operationId": "updateDisplayOrderUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "newsTypeArray",
-            "in": "query",
-            "description": "排序的欣慰类型信息如：[{id:xx, name:xx, displayOrder:xx}...]",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/newsType/{id}": {
-      "get": {
-        "tags": [
-          "news-type-controller"
-        ],
-        "summary": "查询新闻类型详情",
-        "description": "查询新闻类型详情",
-        "operationId": "findByIdUsingGET_10",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻类型id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/NewsType对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "news-type-controller"
-        ],
-        "summary": "通过id修改新闻类型",
-        "description": "通过id修改新闻类型",
-        "operationId": "updateByIdUsingPUT_10",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "displayOrder",
-            "in": "query",
-            "description": "类型显示顺序，值小的排在最前面",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "description": "新闻类型名称",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "news-type-controller"
-        ],
-        "summary": "删除新闻类型, 默认类型删除掉",
-        "description": "修改新闻类型, 默认类型删除掉",
-        "operationId": "deleteByIdUsingDELETE_10",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "新闻类型id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/permission": {
-      "get": {
-        "tags": [
-          "permission-controller"
-        ],
-        "summary": "查询所有资源表",
-        "description": "查询所有资源表",
-        "operationId": "findAllUsingGET_15",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "permission-controller"
-        ],
-        "summary": "添加资源表",
-        "description": "添加资源表",
-        "operationId": "saveUsingPOST_12",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "description",
-            "in": "query",
-            "description": "权限描述",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "enable",
-            "in": "query",
-            "description": "是否启用，0：禁用， 1：启用",
-            "required": false,
-            "type": "boolean",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "method",
-            "in": "query",
-            "description": "请求方法，如get、post等",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "description": "权限名称",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "pid",
-            "in": "query",
-            "description": "父权限id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "url",
-            "in": "query",
-            "description": "请求访问路径",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/permission/{id}": {
-      "get": {
-        "tags": [
-          "permission-controller"
-        ],
-        "summary": "查询资源表详情",
-        "description": "查询资源表详情",
-        "operationId": "findByIdUsingGET_11",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "资源表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/Permission对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "permission-controller"
-        ],
-        "summary": "通过id修改资源表",
-        "description": "通过id修改资源表",
-        "operationId": "updateByIdUsingPUT_11",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "description",
-            "in": "query",
-            "description": "权限描述",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "enable",
-            "in": "query",
-            "description": "是否启用，0：禁用， 1：启用",
-            "required": false,
-            "type": "boolean"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "method",
-            "in": "query",
-            "description": "请求方法，如get、post等",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "description": "权限名称",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "pid",
-            "in": "query",
-            "description": "父权限id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "url",
-            "in": "query",
-            "description": "请求访问路径",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "permission-controller"
-        ],
-        "summary": "删除资源表",
-        "description": "修改资源表",
-        "operationId": "deleteByIdUsingDELETE_11",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "资源表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/replyComment": {
-      "get": {
-        "tags": [
-          "reply-comment-controller"
-        ],
-        "summary": "查询所有回复评论表",
-        "description": "查询所有回复评论表",
-        "operationId": "findAllUsingGET_16",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "reply-comment-controller"
-        ],
-        "summary": "添加回复评论表",
-        "description": "添加回复评论表",
-        "operationId": "saveUsingPOST_13",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "commentId",
-            "in": "query",
-            "description": "新闻id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "content",
-            "in": "query",
-            "description": "评论内容",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "pttUserId",
-            "in": "query",
-            "description": "评论用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/replyComment/{id}": {
-      "get": {
-        "tags": [
-          "reply-comment-controller"
-        ],
-        "summary": "查询回复评论表详情",
-        "description": "查询回复评论表详情",
-        "operationId": "findByIdUsingGET_12",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "回复评论表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/ReplyComment对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "reply-comment-controller"
-        ],
-        "summary": "通过id修改回复评论表",
-        "description": "通过id修改回复评论表",
-        "operationId": "updateByIdUsingPUT_12",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "commentId",
-            "in": "query",
-            "description": "新闻id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "content",
-            "in": "query",
-            "description": "评论内容",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "createTime",
-            "in": "query",
-            "description": "创建时间",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "pttUserId",
-            "in": "query",
-            "description": "评论用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "reply-comment-controller"
-        ],
-        "summary": "删除回复评论表",
-        "description": "修改回复评论表",
-        "operationId": "deleteByIdUsingDELETE_12",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "回复评论表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/replyCommentLike": {
-      "get": {
-        "tags": [
-          "reply-comment-like-controller"
-        ],
-        "summary": "查询所有点赞品论回复",
-        "description": "查询所有点赞品论回复",
-        "operationId": "findAllUsingGET_17",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "reply-comment-like-controller"
-        ],
-        "summary": "添加点赞品论回复",
-        "description": "添加点赞品论回复",
-        "operationId": "saveUsingPOST_14",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "pttUserId",
-            "in": "query",
-            "description": "点赞用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "replyCommentId",
-            "in": "query",
-            "description": "回复评论id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/replyCommentLike/{id}": {
-      "get": {
-        "tags": [
-          "reply-comment-like-controller"
-        ],
-        "summary": "查询点赞品论回复详情",
-        "description": "查询点赞品论回复详情",
-        "operationId": "findByIdUsingGET_13",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "点赞品论回复id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/ReplyCommentLike对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "reply-comment-like-controller"
-        ],
-        "summary": "通过id修改点赞品论回复",
-        "description": "通过id修改点赞品论回复",
-        "operationId": "updateByIdUsingPUT_13",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理ID",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "pttUserId",
-            "in": "query",
-            "description": "点赞用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "replyCommentId",
-            "in": "query",
-            "description": "回复评论id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "reply-comment-like-controller"
-        ],
-        "summary": "删除点赞品论回复",
-        "description": "修改点赞品论回复",
-        "operationId": "deleteByIdUsingDELETE_13",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "点赞品论回复id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
     "/role": {
       "get": {
         "tags": [
@@ -4533,7 +436,7 @@
         ],
         "summary": "查询所有角色类型及管理员类型",
         "description": "查询所有角色类型及管理员类型",
-        "operationId": "findAllUsingGET_18",
+        "operationId": "findAllUsingGET_1",
         "produces": [
           "application/json;charset=UTF-8"
         ],
@@ -4581,7 +484,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "type": "object"
+              "$ref": "#/definitions/RoleFindAllVo对象"
             }
           }
         },
@@ -4600,7 +503,7 @@
         ],
         "summary": "添加角色类型及管理员类型",
         "description": "添加角色类型及管理员类型",
-        "operationId": "saveUsingPOST_15",
+        "operationId": "saveUsingPOST_1",
         "consumes": [
           "application/json"
         ],
@@ -4612,7 +515,7 @@
             "name": "name",
             "in": "query",
             "description": "管理员类型名称",
-            "required": false,
+            "required": true,
             "type": "string",
             "allowEmptyValue": false
           }
@@ -4642,7 +545,7 @@
         ],
         "summary": "查询角色类型及管理员类型详情",
         "description": "查询角色类型及管理员类型详情",
-        "operationId": "findByIdUsingGET_14",
+        "operationId": "findByIdUsingGET_1",
         "produces": [
           "application/json;charset=UTF-8"
         ],
@@ -4679,7 +582,7 @@
         ],
         "summary": "通过id修改角色类型及管理员类型",
         "description": "通过id修改角色类型及管理员类型",
-        "operationId": "updateByIdUsingPUT_14",
+        "operationId": "updateByIdUsingPUT_1",
         "consumes": [
           "application/json"
         ],
@@ -4723,7 +626,7 @@
         ],
         "summary": "删除角色类型及管理员类型",
         "description": "修改角色类型及管理员类型",
-        "operationId": "deleteByIdUsingDELETE_14",
+        "operationId": "deleteByIdUsingDELETE_1",
         "produces": [
           "application/json;charset=UTF-8"
         ],
@@ -4752,18 +655,212 @@
         "deprecated": false
       }
     },
-    "/rolePermission": {
-      "get": {
+    "/thirdPart/addSolrMsgId": {
+      "post": {
         "tags": [
-          "role-permission-controller"
+          "third-part-controller"
         ],
-        "summary": "查询所有角色表",
-        "description": "查询所有角色表",
-        "operationId": "findAllUsingGET_19",
+        "summary": "添加solr查询日志具体查看的表的id",
+        "description": "添加solr查询日志具体查看的表的id",
+        "operationId": "addSolrMsgIdUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
         "produces": [
           "application/json;charset=UTF-8"
         ],
         "parameters": [
+          {
+            "name": "msgId",
+            "in": "query",
+            "description": "具体的tableId",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "uniqueFlag",
+            "in": "query",
+            "description": "uniqueFlag",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/thirdPart/addSolrQueryLog": {
+      "post": {
+        "tags": [
+          "third-part-controller"
+        ],
+        "summary": "添加solr查询日志",
+        "description": "添加solr查询日志",
+        "operationId": "addSolrQueryLogUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json;charset=UTF-8"
+        ],
+        "parameters": [
+          {
+            "name": "createTime",
+            "in": "query",
+            "description": "创建时间",
+            "required": true,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "description": "email",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "solr搜索的关键字",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "label",
+            "in": "query",
+            "description": "solr查询界面标签",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "phone",
+            "in": "query",
+            "description": "号码",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "solrQueryParam",
+            "in": "query",
+            "description": "solr搜索的关键字",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "tableName",
+            "in": "query",
+            "description": "solr表",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "uniqueFlag",
+            "in": "query",
+            "description": "solrlog 唯一标志",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户id",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "userName",
+            "in": "query",
+            "description": "用户名称",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Authorization": [
+              "global"
+            ]
+          }
+        ],
+        "deprecated": false
+      }
+    },
+    "/userLog": {
+      "get": {
+        "tags": [
+          "user-log-controller"
+        ],
+        "summary": "查询所有用户日志",
+        "description": "查询所有用户日志",
+        "operationId": "findAllUsingGET_2",
+        "produces": [
+          "application/json;charset=UTF-8"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "用户email模糊查询",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "结束时间：单位毫秒",
+            "required": false,
+            "type": "integer",
+            "format": "int64",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "keyword模糊搜索",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
+            "name": "label",
+            "in": "query",
+            "description": "solr查询界面标签模糊查询",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
           {
             "name": "limit",
             "in": "query",
@@ -4788,9 +885,17 @@
             "type": "string"
           },
           {
+            "name": "phone",
+            "in": "query",
+            "description": "号码模糊查询",
+            "required": false,
+            "type": "string",
+            "allowEmptyValue": false
+          },
+          {
             "name": "search",
             "in": "query",
-            "description": "模糊查询字段",
+            "description": "模糊查询字段：email、userName、phone",
             "required": false,
             "type": "string",
             "allowEmptyValue": false
@@ -4801,55 +906,22 @@
             "description": "排序字段",
             "required": false,
             "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
+          },
           {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "role-permission-controller"
-        ],
-        "summary": "添加角色表",
-        "description": "添加角色表",
-        "operationId": "saveUsingPOST_16",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "permissionId",
+            "name": "startTime",
             "in": "query",
-            "description": "权限id",
+            "description": "开始时间：单位毫秒",
             "required": false,
             "type": "integer",
-            "format": "int32",
+            "format": "int64",
             "allowEmptyValue": false
           },
           {
-            "name": "roleId",
+            "name": "userName",
             "in": "query",
-            "description": "角色id",
+            "description": "用户名称模糊查询",
             "required": false,
-            "type": "integer",
-            "format": "int32",
+            "type": "string",
             "allowEmptyValue": false
           }
         ],
@@ -4857,7 +929,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/IdVo"
+              "$ref": "#/definitions/UserLogFindAllVo对象"
             }
           }
         },
@@ -4871,14 +943,14 @@
         "deprecated": false
       }
     },
-    "/rolePermission/{id}": {
+    "/userLog/{id}": {
       "get": {
         "tags": [
-          "role-permission-controller"
+          "user-log-controller"
         ],
-        "summary": "查询角色表详情",
-        "description": "查询角色表详情",
-        "operationId": "findByIdUsingGET_15",
+        "summary": "查询用户日志详情",
+        "description": "查询用户日志详情",
+        "operationId": "findByIdUsingGET_2",
         "produces": [
           "application/json;charset=UTF-8"
         ],
@@ -4886,7 +958,7 @@
           {
             "name": "id",
             "in": "path",
-            "description": "角色表id",
+            "description": "用户日志id",
             "required": true,
             "type": "integer",
             "format": "int32"
@@ -4896,476 +968,8 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/RolePermission对象"
+              "$ref": "#/definitions/UserLog对象"
             }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "role-permission-controller"
-        ],
-        "summary": "通过id修改角色表",
-        "description": "通过id修改角色表",
-        "operationId": "updateByIdUsingPUT_15",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "permissionId",
-            "in": "query",
-            "description": "权限id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "roleId",
-            "in": "query",
-            "description": "角色id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "role-permission-controller"
-        ],
-        "summary": "删除角色表",
-        "description": "修改角色表",
-        "operationId": "deleteByIdUsingDELETE_15",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "角色表id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/users": {
-      "get": {
-        "tags": [
-          "users-controller"
-        ],
-        "summary": "查询所有",
-        "description": "查询所有",
-        "operationId": "findAllUsingGET_20",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "页大小",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "APP用的是偏移量， 服务端用的是当前页码",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "升序降序字段,如：casc 升序 desc降序，暂时没写代码，根据实际情况商量处理。默认id desc",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "模糊查询字段",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "排序字段",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "users-controller"
-        ],
-        "summary": "添加",
-        "description": "添加",
-        "operationId": "saveUsingPOST_17",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "avatar",
-            "in": "query",
-            "description": "头像（头像地址）",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "email",
-            "in": "query",
-            "description": "邮箱地址，和emm一致，可以用来登录",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "mobile",
-            "in": "query",
-            "description": "手机号码,可以用来登录",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "nickname",
-            "in": "query",
-            "description": "昵称",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "password",
-            "in": "query",
-            "description": "SHA256计算的密码hash值",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "secret",
-            "in": "query",
-            "description": "密码MD5，保留兼容语音通话",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "userId",
-            "in": "query",
-            "description": "用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          },
-          {
-            "name": "username",
-            "in": "query",
-            "description": "用户名称",
-            "required": false,
-            "type": "string",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/IdVo"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/users/becomeAdministrator": {
-      "post": {
-        "tags": [
-          "users-controller"
-        ],
-        "summary": "把用户设置为管理员",
-        "description": "把用户设置为管理员",
-        "operationId": "becomeAdministratorUsingPOST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "query",
-            "description": "用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "allowEmptyValue": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      }
-    },
-    "/users/{id}": {
-      "get": {
-        "tags": [
-          "users-controller"
-        ],
-        "summary": "查询详情",
-        "description": "查询详情",
-        "operationId": "findByIdUsingGET_16",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/Users对象"
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "put": {
-        "tags": [
-          "users-controller"
-        ],
-        "summary": "通过id修改",
-        "description": "通过id修改",
-        "operationId": "updateByIdUsingPUT_16",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "avatar",
-            "in": "query",
-            "description": "头像（头像地址）",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "created",
-            "in": "query",
-            "description": "创建时间，单位：毫秒",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "email",
-            "in": "query",
-            "description": "邮箱地址，和emm一致，可以用来登录",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "description": "代理id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "mobile",
-            "in": "query",
-            "description": "手机号码,可以用来登录",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "nickname",
-            "in": "query",
-            "description": "昵称",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "password",
-            "in": "query",
-            "description": "SHA256计算的密码hash值",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "secret",
-            "in": "query",
-            "description": "密码MD5，保留兼容语音通话",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "userId",
-            "in": "query",
-            "description": "用户id",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "username",
-            "in": "query",
-            "description": "用户名称",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Authorization": [
-              "global"
-            ]
-          }
-        ],
-        "deprecated": false
-      },
-      "delete": {
-        "tags": [
-          "users-controller"
-        ],
-        "summary": "删除",
-        "description": "修改",
-        "operationId": "deleteByIdUsingDELETE_16",
-        "produces": [
-          "application/json;charset=UTF-8"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "id",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
           }
         },
         "security": [
@@ -5387,274 +991,6 @@
     }
   },
   "definitions": {
-    "APPCoverRotationEntityVo对象": {
-      "type": "object",
-      "properties": {
-        "htmlUrl": {
-          "type": "string",
-          "description": "新闻html地址"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "轮播id"
-        },
-        "imageUrl": {
-          "type": "string",
-          "description": "轮播图片"
-        },
-        "newsId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "新闻id"
-        },
-        "title": {
-          "type": "string",
-          "description": "新闻标题"
-        }
-      },
-      "title": "APPCoverRotationEntityVo对象",
-      "description": "轮播信息信息"
-    },
-    "APPFindAllCoverRotationVo": {
-      "type": "object",
-      "properties": {
-        "coverRotationList": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/APPCoverRotationEntityVo对象"
-          }
-        },
-        "coverRotationTime": {
-          "type": "integer",
-          "format": "int32",
-          "description": "轮播时间，单位：秒"
-        }
-      },
-      "title": "APPFindAllCoverRotationVo",
-      "description": "获取轮播图象关信息"
-    },
-    "APPFindAllNewsEntityVo对象": {
-      "type": "object",
-      "properties": {
-        "checkStatus": {
-          "type": "integer",
-          "format": "int32",
-          "description": "审核状态，1：正常， 0：待审核"
-        },
-        "commentCount": {
-          "type": "integer",
-          "format": "int32",
-          "description": "评论数量"
-        },
-        "coverImageUrlArray": {
-          "type": "string",
-          "description": "封面图片地址,存的是数组：[]"
-        },
-        "createTime": {
-          "type": "integer",
-          "format": "int64",
-          "description": "创建时间，单位：毫秒"
-        },
-        "htmlContent": {
-          "type": "string",
-          "description": "生成html内容"
-        },
-        "htmlUrl": {
-          "type": "string",
-          "description": "生成的html地址"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理id"
-        },
-        "managerCreatorId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "管理员创建者id"
-        },
-        "newsTempleteType": {
-          "type": "integer",
-          "format": "int32",
-          "description": "新闻模板类型，1:仅显示标题，无图片,2:显示标题和1张图片,3:显示标题合和3张图片,4:左边显示标题右边显示1张图片,5:右边显示标题左边显示1张图片"
-        },
-        "showStatus": {
-          "type": "integer",
-          "format": "int32",
-          "description": "显示状态，1：显示，0：不显示"
-        },
-        "sources": {
-          "type": "string",
-          "description": "新闻来源"
-        },
-        "title": {
-          "type": "string",
-          "description": "标题"
-        },
-        "titleStatus": {
-          "type": "integer",
-          "format": "int32",
-          "description": "标题状态，1：显示，0：不显示"
-        },
-        "typeId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "类型id"
-        },
-        "typeName": {
-          "type": "integer",
-          "format": "int32",
-          "description": "类型名称"
-        },
-        "userCreatorId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "用户创建者id"
-        },
-        "visitCount": {
-          "type": "integer",
-          "format": "int32",
-          "description": "访问量"
-        }
-      },
-      "title": "APPFindAllNewsEntityVo对象",
-      "description": "新闻表"
-    },
-    "CommentLike对象": {
-      "type": "object",
-      "properties": {
-        "commentId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "品论id"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理ID"
-        },
-        "pttUserId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "点赞用户id"
-        }
-      },
-      "title": "CommentLike对象",
-      "description": "点赞品论"
-    },
-    "Comment对象": {
-      "type": "object",
-      "properties": {
-        "content": {
-          "type": "string",
-          "description": "评论内容"
-        },
-        "createTime": {
-          "type": "integer",
-          "format": "int64",
-          "description": "创建时间"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理ID"
-        },
-        "newsId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "新闻id"
-        },
-        "pttUserId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "品论用户id"
-        }
-      },
-      "title": "Comment对象",
-      "description": "新闻评论"
-    },
-    "Config对象": {
-      "type": "object",
-      "properties": {
-        "coverRotationTime": {
-          "type": "integer",
-          "format": "int32",
-          "description": "客户端封面轮播时间，单位：秒"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理ID"
-        },
-        "newsCheckFlag": {
-          "type": "integer",
-          "format": "int32",
-          "description": "新闻审核标志，1：要审核，0：不需要审核"
-        },
-        "pttAuthUrl": {
-          "type": "string",
-          "description": "ptt认证服务器地址"
-        },
-        "pttServerUrl": {
-          "type": "string",
-          "description": "ptt务器地址"
-        },
-        "showImage": {
-          "type": "integer",
-          "format": "int32",
-          "description": "要闻中显示图片：0：不显示， 1：显示"
-        },
-        "syncPttUserTime": {
-          "type": "integer",
-          "format": "int64",
-          "description": "同步ptt用户信息时间，单位：毫秒"
-        }
-      },
-      "title": "Config对象",
-      "description": "配置表"
-    },
-    "CoverRotation对象": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理ID"
-        },
-        "imageUrl": {
-          "type": "string",
-          "description": "图片地址，只能是一张图片"
-        },
-        "newsId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "新闻id"
-        }
-      },
-      "title": "CoverRotation对象",
-      "description": "新闻显示列表,通过id排序轮播列表"
-    },
-    "CoverTemplete对象": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理ID"
-        },
-        "title": {
-          "type": "string",
-          "description": "封面模板标题"
-        },
-        "url": {
-          "type": "string",
-          "description": "封面模板地址"
-        }
-      },
-      "title": "CoverTemplete对象",
-      "description": "新闻模板样式"
-    },
     "IdVo": {
       "type": "object",
       "properties": {
@@ -5677,32 +1013,35 @@
       },
       "description": "返回添加数据的id"
     },
-    "LoginSuccessVo对象": {
+    "LoginVo对象": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "管理员id"
-        },
-        "result": {
-          "type": "integer",
-          "format": "int32",
-          "description": "登录结果, ture:成功， false：失败"
-        },
-        "roleId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "角色id"
-        },
         "token": {
-          "type": "integer",
-          "format": "int32",
-          "description": "接口token"
+          "type": "string",
+          "description": "token调用接口的时候带到header中"
         }
       },
-      "title": "LoginSuccessVo对象",
-      "description": "登录成功返回对象"
+      "title": "LoginVo对象",
+      "description": "登录返回对象"
+    },
+    "ManagerFindAllVo对象": {
+      "type": "object",
+      "properties": {
+        "records": {
+          "type": "array",
+          "description": "所有管理员信息",
+          "items": {
+            "$ref": "#/definitions/Manager对象"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": "总条数"
+        }
+      },
+      "title": "ManagerFindAllVo对象",
+      "description": "获取所有管理员信息"
     },
     "Manager对象": {
       "type": "object",
@@ -5718,12 +1057,13 @@
         },
         "id": {
           "type": "integer",
-          "format": "int32"
+          "format": "int32",
+          "description": "代理ID"
         },
         "lastLoginTime": {
           "type": "integer",
           "format": "int64",
-          "description": "最后登录时间"
+          "description": "最后登录时间，单位毫秒"
         },
         "mobile": {
           "type": "string",
@@ -5742,6 +1082,10 @@
           "format": "int32",
           "description": "角色id"
         },
+        "roleName": {
+          "type": "string",
+          "description": "角色名称"
+        },
         "username": {
           "type": "string",
           "description": "用户名称"
@@ -5750,468 +1094,24 @@
       "title": "Manager对象",
       "description": "管理员表"
     },
-    "NewsFindAllEntityVo对象": {
-      "type": "object",
-      "properties": {
-        "checkStatus": {
-          "type": "integer",
-          "format": "int32",
-          "description": "审核状态，1：正常， 0：待审核"
-        },
-        "commentCount": {
-          "type": "integer",
-          "format": "int32",
-          "description": "评论数量"
-        },
-        "coverImageUrlArray": {
-          "type": "string",
-          "description": "图片地址"
-        },
-        "createTime": {
-          "type": "integer",
-          "format": "int64",
-          "description": "创建时间，单位：毫秒"
-        },
-        "htmlContent": {
-          "type": "string",
-          "description": "生成html内容"
-        },
-        "htmlUrl": {
-          "type": "string",
-          "description": "生成的html地址"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理id"
-        },
-        "managerCreatorId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "管理员创建者id"
-        },
-        "managerName": {
-          "type": "string",
-          "description": "管理员名称"
-        },
-        "newsSourcesId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "新闻来源id"
-        },
-        "newsTempleteType": {
-          "type": "string",
-          "description": "新闻来源id"
-        },
-        "showStatus": {
-          "type": "integer",
-          "format": "int32",
-          "description": "显示状态，1：显示，0：不显示"
-        },
-        "title": {
-          "type": "string",
-          "description": "标题"
-        },
-        "titleStatus": {
-          "type": "integer",
-          "format": "int32",
-          "description": "标题状态，1：显示，0：不显示"
-        },
-        "topFlag": {
-          "type": "integer",
-          "format": "int32",
-          "description": "是否为置顶新闻，0：不是， 1：是"
-        },
-        "typeId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "类型id"
-        },
-        "userCreatorId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "用户创建者id"
-        },
-        "userName": {
-          "type": "string",
-          "description": "用户名称"
-        },
-        "visitCount": {
-          "type": "integer",
-          "format": "int32",
-          "description": "访问量"
-        }
-      },
-      "title": "NewsFindAllEntityVo对象",
-      "description": "查看所有新闻返回对象"
-    },
-    "NewsFindAllSwaggerVo": {
-      "type": "object",
-      "properties": {
-        "rows": {
-          "type": "array",
-          "description": "所有新闻信息",
-          "items": {
-            "$ref": "#/definitions/APPFindAllNewsEntityVo对象"
-          }
-        },
-        "total": {
-          "type": "integer",
-          "format": "int64",
-          "description": "总条数"
-        }
-      },
-      "title": "NewsFindAllSwaggerVo",
-      "description": "获取所有新闻信息"
-    },
-    "NewsFindAllVo对象": {
+    "RoleFindAllVo对象": {
       "type": "object",
       "properties": {
         "records": {
           "type": "array",
-          "description": "所有新闻及相关信息",
+          "description": "所有角色信息",
           "items": {
-            "$ref": "#/definitions/NewsFindAllEntityVo对象"
+            "$ref": "#/definitions/Role对象"
           }
         },
         "total": {
           "type": "integer",
-          "format": "int32",
+          "format": "int64",
           "description": "总条数"
         }
       },
-      "title": "NewsFindAllVo对象",
-      "description": "所有新闻及相关信息"
-    },
-    "NewsLike对象": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理ID"
-        },
-        "newsId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "新闻id"
-        },
-        "pttUserId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "点赞用户id"
-        }
-      },
-      "title": "NewsLike对象",
-      "description": "点赞新闻"
-    },
-    "NewsSourcesEntityVo对象": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理ID"
-        },
-        "name": {
-          "type": "string",
-          "description": "新闻来源名称"
-        },
-        "newsCount": {
-          "type": "integer",
-          "format": "int32",
-          "description": "新闻中条数"
-        }
-      },
-      "title": "NewsSourcesEntityVo对象",
-      "description": "新闻来源及统计对象"
-    },
-    "NewsSourcesFindAllVo": {
-      "type": "object",
-      "properties": {
-        "records": {
-          "type": "array",
-          "description": "所有新闻类型及统计",
-          "items": {
-            "$ref": "#/definitions/NewsTypeFindAndCountVo"
-          }
-        },
-        "total": {
-          "type": "integer",
-          "format": "int32",
-          "description": "总条数"
-        }
-      },
-      "title": "NewsSourcesFindAllVo",
-      "description": "所有新闻类型及统计"
-    },
-    "NewsSources对象": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理ID"
-        },
-        "name": {
-          "type": "string",
-          "description": "新闻来源名称"
-        }
-      },
-      "title": "NewsSources对象",
-      "description": "新闻来源"
-    },
-    "NewsTop对象": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理ID"
-        },
-        "newsId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "置顶新闻id"
-        }
-      },
-      "title": "NewsTop对象",
-      "description": "新闻置顶列表"
-    },
-    "NewsTypeFindAndCountVo": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理id"
-        },
-        "name": {
-          "type": "string",
-          "description": "新闻类型名称"
-        },
-        "newsCount": {
-          "type": "integer",
-          "format": "int32",
-          "description": "该类型新闻条数"
-        }
-      },
-      "title": "NewsTypeFindAndCountVo",
-      "description": "新闻类型查询和统计"
-    },
-    "NewsType对象": {
-      "type": "object",
-      "properties": {
-        "displayOrder": {
-          "type": "integer",
-          "format": "int32",
-          "description": "类型显示顺序，值小的排在最前面"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理id"
-        },
-        "name": {
-          "type": "string",
-          "description": "新闻类型名称"
-        }
-      },
-      "title": "NewsType对象",
-      "description": "新闻类型"
-    },
-    "News对象": {
-      "type": "object",
-      "properties": {
-        "checkStatus": {
-          "type": "integer",
-          "format": "int32",
-          "description": "审核状态，1：正常， 0：待审核"
-        },
-        "commentCount": {
-          "type": "integer",
-          "format": "int32",
-          "description": "评论数量"
-        },
-        "coverImageUrlArray": {
-          "type": "string",
-          "description": "图片地址"
-        },
-        "createTime": {
-          "type": "integer",
-          "format": "int64",
-          "description": "创建时间，单位：毫秒"
-        },
-        "htmlContent": {
-          "type": "string",
-          "description": "生成html内容"
-        },
-        "htmlUrl": {
-          "type": "string",
-          "description": "生成的html地址"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理id"
-        },
-        "managerCreatorId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "管理员创建者id"
-        },
-        "newsSourcesId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "新闻来源id"
-        },
-        "newsTempleteType": {
-          "type": "string",
-          "description": "新闻来源id"
-        },
-        "showStatus": {
-          "type": "integer",
-          "format": "int32",
-          "description": "显示状态，1：显示，0：不显示"
-        },
-        "title": {
-          "type": "string",
-          "description": "标题"
-        },
-        "titleStatus": {
-          "type": "integer",
-          "format": "int32",
-          "description": "标题状态，1：显示，0：不显示"
-        },
-        "typeId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "类型id"
-        },
-        "userCreatorId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "用户创建者id"
-        },
-        "visitCount": {
-          "type": "integer",
-          "format": "int32",
-          "description": "访问量"
-        }
-      },
-      "title": "News对象",
-      "description": "新闻表"
-    },
-    "Permission对象": {
-      "type": "object",
-      "properties": {
-        "description": {
-          "type": "string",
-          "description": "权限描述"
-        },
-        "enable": {
-          "type": "boolean",
-          "description": "是否启用，0：禁用， 1：启用"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理id"
-        },
-        "method": {
-          "type": "string",
-          "description": "请求方法，如get、post等"
-        },
-        "name": {
-          "type": "string",
-          "description": "权限名称"
-        },
-        "pid": {
-          "type": "integer",
-          "format": "int32",
-          "description": "父权限id"
-        },
-        "url": {
-          "type": "string",
-          "description": "请求访问路径"
-        }
-      },
-      "title": "Permission对象",
-      "description": "资源表"
-    },
-    "ReplyCommentLike对象": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理ID"
-        },
-        "pttUserId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "点赞用户id"
-        },
-        "replyCommentId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "回复评论id"
-        }
-      },
-      "title": "ReplyCommentLike对象",
-      "description": "点赞品论回复"
-    },
-    "ReplyComment对象": {
-      "type": "object",
-      "properties": {
-        "commentId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "新闻id"
-        },
-        "content": {
-          "type": "string",
-          "description": "评论内容"
-        },
-        "createTime": {
-          "type": "integer",
-          "format": "int64",
-          "description": "创建时间"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "pttUserId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "评论用户id"
-        }
-      },
-      "title": "ReplyComment对象",
-      "description": "回复评论表"
-    },
-    "RolePermission对象": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32",
-          "description": "代理id"
-        },
-        "permissionId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "权限id"
-        },
-        "roleId": {
-          "type": "integer",
-          "format": "int32",
-          "description": "角色id"
-        }
-      },
-      "title": "RolePermission对象",
-      "description": "角色表"
+      "title": "RoleFindAllVo对象",
+      "description": "获取所有角色信息"
     },
     "Role对象": {
       "type": "object",
@@ -6229,54 +1129,94 @@
       "title": "Role对象",
       "description": "角色类型及管理员类型"
     },
-    "Users对象": {
+    "UserLogFindAllVo对象": {
       "type": "object",
       "properties": {
-        "avatar": {
-          "type": "string",
-          "description": "头像（头像地址）"
+        "records": {
+          "type": "array",
+          "description": "获取所有用户日志信息",
+          "items": {
+            "$ref": "#/definitions/UserLog对象"
+          }
         },
-        "created": {
+        "total": {
           "type": "integer",
           "format": "int64",
-          "description": "创建时间，单位：毫秒"
+          "description": "总条数"
+        }
+      },
+      "title": "UserLogFindAllVo对象",
+      "description": "获取所有用户日志信息"
+    },
+    "UserLog对象": {
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "type": "integer",
+          "format": "int64",
+          "description": "创建时间"
+        },
+        "description": {
+          "type": "string",
+          "description": "日志描述"
         },
         "email": {
           "type": "string",
-          "description": "邮箱地址，和emm一致，可以用来登录"
+          "description": "email"
         },
         "id": {
           "type": "integer",
           "format": "int32",
-          "description": "代理id"
+          "description": "主键"
         },
-        "mobile": {
+        "ip": {
           "type": "string",
-          "description": "手机号码,可以用来登录"
+          "description": "请求ip"
         },
-        "nickname": {
+        "keyword": {
           "type": "string",
-          "description": "昵称"
+          "description": "solr搜索关键字"
         },
-        "password": {
+        "label": {
           "type": "string",
-          "description": "SHA256计算的密码hash值"
+          "description": "solr界面查询的标签"
         },
-        "secret": {
+        "md5": {
           "type": "string",
-          "description": "密码MD5，保留兼容语音通话"
+          "description": "md5防止篡改，md5(user_id+description)"
+        },
+        "phone": {
+          "type": "string",
+          "description": "号码"
+        },
+        "solrMsgId": {
+          "type": "string",
+          "description": "solr索引数据id"
+        },
+        "solrQueryParam": {
+          "type": "string",
+          "description": "solr搜索参数"
+        },
+        "tableName": {
+          "type": "string",
+          "description": "solr表名称"
+        },
+        "uniqueFlag": {
+          "type": "string",
+          "description": "日志唯一标识"
         },
         "userId": {
           "type": "integer",
           "format": "int32",
           "description": "用户id"
         },
-        "username": {
+        "userName": {
           "type": "string",
           "description": "用户名称"
         }
       },
-      "title": "Users对象"
+      "title": "UserLog对象",
+      "description": "用户日志"
     }
   }
 }
