@@ -4,78 +4,51 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script type="text/javascript">
-        window.onload = function(){
-            for (let i = 1; i < 1000; i++) {
+        window.onload = function () {
+            for (let i = 2; i < 6; i++) {
                 var id = "show_json" + i;
                 const text = document.getElementById(id).innerText;
                 if (text) {
+                    try {
+                        const result = JSON.stringify(JSON.parse(text), null, 100);
+                        document.getElementById(id).innerHTML = "<pre>" + result + "</pre>";
+                    } catch (e) {
+                        console.log(e);
+                    }
                     const result = JSON.stringify(JSON.parse(text), null, 100);
                     document.getElementById(id).innerHTML = "<pre>" + result + "</pre>";
                 }
             }
         }
     </script>
+    <style>
+        table {
+            border-right: 1px black;
+            border-bottom: 1px black;
+        }
+        table td {
+            border-left: 1px black;
+            border-top: 1px black
+        }
+
+
+    </style>
 </head>
 <body>
 <h1 align="center">位置管理</h1>
 <h2>位置管理</h2>
-<h3>xxxxxx</h3>
-<table border="1">
-    <tr>
-        <td colspan="4">查询所有位置信息</td>
-    </tr>
-    <tr>
-        <td>url</td>
-        <td colspan="3">/V1/position
-            查询所有位置信息
-        </td>
-    </tr>
-    <tr>
-        <td>字段名称</td>
-        <td>字段类型</td>
-        <td>是否必须</td>
-        <td>字段描述</td>
-    </tr>
-    <tr>
-        <td>id</td>
-        <td>integer</td>
-        <td>false</td>
-        <td>自主id</td>
-    </tr>
-    <tr>
-        <td>response</td>
-        <td colspan="3">application/json</td>
-    </tr>
-    <tr>
-        <td>返回状态</td>
-        <td colspan="3">返回结果</td>
-    </tr>
-    <tr>
-        <td>200</td>
-        <td colspan="3">
-            <p id="show_json1">
-                {
-                "id": 0,
-                "lastLoginTime": 0,
-                "username": "string"
-                }
-            </p>
-        </td>
-    </tr>
-</table>
-
 <h3>sssssss</h3>
-<table border="1">
-    <tr style="background: gray">
+<table border="1" cellspacing="0" cellpadding="0" width="80%">
+    <tr style="background: rgb(215,215,215)">
         <td colspan="4">查询所有位置信息</td>
     </tr>
     <tr>
-        <td style="background: gray">url</td>
+        <td style="background: rgb(215,215,215)">url</td>
         <td colspan="3">/V1/position
             查询所有位置信息
         </td>
     </tr>
-    <tr style="background: gray">
+    <tr style="background: rgb(215,215,215)">
         <td>字段名称</td>
         <td>字段类型</td>
         <td>是否必须</td>
@@ -91,7 +64,7 @@
         <td>response</td>
         <td colspan="3">application/json</td>
     </tr>
-    <tr style="background: gray">
+    <tr style="background: rgb(215,215,215)">
         <td>返回状态</td>
         <td colspan="3">返回结果</td>
     </tr>
@@ -109,17 +82,17 @@
     </tr>
 </table>
 <h3>mmmmmmm</h3>
-<table border="1">
-    <tr style="background: gray">
+<table border="1px" cellspacing="0" cellpadding="0">
+    <tr style="background: rgb(215,215,215)">
         <td colspan="4">查询所有位置信息</td>
     </tr>
     <tr>
-        <td style="background: gray">url</td>
+        <td style="background: rgb(215,215,215)">url</td>
         <td colspan="3">/V1/position
             查询所有位置信息
         </td>
     </tr>
-    <tr style="background: gray">
+    <tr style="background: rgb(215,215,215)">
         <td>字段名称</td>
         <td>字段类型</td>
         <td>是否必须</td>
@@ -135,7 +108,7 @@
         <td>response</td>
         <td colspan="3">application/json</td>
     </tr>
-    <tr style="background: gray">
+    <tr style="background: rgb(215,215,215)">
         <td>返回状态</td>
         <td colspan="3">返回结果</td>
     </tr>
@@ -153,17 +126,17 @@
     </tr>
 </table>
 <h3>hhhhhhh</h3>
-<table border="1">
-    <tr style="background: gray">
+<table border="1px" cellspacing="0" cellpadding="0">
+    <tr style="background: rgb(215,215,215)">
         <td colspan="4">查询所有位置信息</td>
     </tr>
     <tr>
-        <td style="background: gray">url</td>
+        <td style="background: rgb(215,215,215)">url</td>
         <td colspan="3">/V1/position
             查询所有位置信息
         </td>
     </tr>
-    <tr style="background: gray">
+    <tr style="background: rgb(215,215,215)">
         <td>字段名称</td>
         <td>字段类型</td>
         <td>是否必须</td>
@@ -179,7 +152,7 @@
         <td>response</td>
         <td colspan="3">application/json</td>
     </tr>
-    <tr style="background: gray">
+    <tr style="background: rgb(215,215,215)">
         <td>返回状态</td>
         <td colspan="3">返回结果</td>
     </tr>
@@ -192,16 +165,16 @@
 </table>
 <h3>jjjjjj</h3>
 <table border="1">
-    <tr style="background: gray">
+    <tr style="background: rgb(215,215,215)">
         <td colspan="4">查询所有位置信息</td>
     </tr>
     <tr>
-        <td style="background: gray">url</td>
+        <td style="background: rgb(215,215,215)">url</td>
         <td colspan="3">/V1/position
             查询所有位置信息
         </td>
     </tr>
-    <tr style="background: gray">
+    <tr style="background: rgb(215,215,215)">
         <td>字段名称</td>
         <td>字段类型</td>
         <td>是否必须</td>
@@ -217,7 +190,7 @@
         <td>response</td>
         <td colspan="3">application/json</td>
     </tr>
-    <tr style="background: gray">
+    <tr style="background: rgb(215,215,215)">
         <td>返回状态</td>
         <td colspan="3">返回结果</td>
     </tr>

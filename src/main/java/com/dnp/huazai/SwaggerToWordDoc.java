@@ -71,15 +71,15 @@ public class SwaggerToWordDoc {
     private static void generateTable(JSONObject definitions, StringBuilder htmlBuilder,
                                       String keyName, String methodSummary, JSONObject methodData, String method) {
         htmlBuilder.append("<h3>" + methodSummary + "</h3>" +
-                "<table border=\"1\" width = \"80%\">" +
-                "   <tr>\n" +
+                "<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" width = \"80%\">" +
+                "   <tr style=\"background: rgb(215, 215, 215)\">\n" +
                 "       <td colspan=\"4\">" + methodSummary + "</td>\n" +
                 "   </tr>" +
                 "   <tr>\n" +
-                "       <td>url(" + method + ")</td>\n" +
+                "       <td style=\"background: rgb(215, 215, 215)\">url(" + method + ")</td>\n" +
                 "       <td colspan=\"3\">" + keyName + "\n</td>\n" +
                 "   </tr>" +
-                "   <tr>\n" +
+                "   <tr style=\"background: rgb(215, 215, 215)\">\n" +
                 "       <td>字段名称</td>\n" +
                 "       <td>字段类型</td>\n" +
                 "       <td>是否必须</td>\n" +
@@ -105,7 +105,7 @@ public class SwaggerToWordDoc {
                     "</tr>");
         }
 
-        htmlBuilder.append("<tr>\n" +
+        htmlBuilder.append("<tr style=\"background: rgb(215, 215, 215)\">\n" +
                 "   <td>返回状态</td>\n" +
                 "   <td colspan=\"3\">返回结果</td>\n" +
                 "</tr>");
@@ -165,12 +165,20 @@ public class SwaggerToWordDoc {
                         "                   var id = \"show_json\" + i;\n" +
                         "                   const text = document.getElementById(id).innerText;\n" +
                         "                   if (text) {\n" +
-                        "                       const result = JSON.stringify(JSON.parse(text), null, 100);\n" +
-                        "                       document.getElementById(id).innerHTML = \"<pre>\" + result + \"</pre>\";\n" +
+                        "                     try {\n" +
+                        "                        const result = JSON.stringify(JSON.parse(text), null, 100);\n" +
+                        "                        document.getElementById(id).innerHTML = \"<pre>\" + result + \"</pre>\";\n" +
+                        "                    }catch (e) {\n" +
+                        "                        console.log(e);\n" +
+                        "                    }" +
                         "                }\n" +
                         "            }\n" +
                         "        }\n" +
                         "       </script>" +
+                        "       <style>\n" +
+                        "           table{border-right:1px black;border-bottom:1px black}\n" +
+                        "           table td{border-left:1px black;border-top:1px black}\n" +
+                        "       </style>" +
                         "       </head>\n" +
                         "<body>" +
                         "<h1 align=\"center\">" + docTitle + "</h1>";
@@ -188,9 +196,11 @@ public class SwaggerToWordDoc {
         ID++;
         String resultHtmlRow = "<tr>\n" +
                 "   <td>" + resStatus + "</td>\n" +
-                "   <p id=\"show_json" + ID + "\">" +
-                "       <td colspan=\"3\">" + resResult + "</td>\n" +
-                "   </p>" +
+                "       <td colspan=\"3\">" +
+                "       <p id=\"show_json" + ID + "\">" +
+                            resResult +
+                "       </p>" +
+                    "</td>\n" +
                 "</tr>";
         htmlBuilder.append(resultHtmlRow);
     }
